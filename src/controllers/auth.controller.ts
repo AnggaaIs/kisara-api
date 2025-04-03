@@ -7,6 +7,7 @@ import { environment } from "../config/environment";
 import { JwtUtil } from "../utils/jwt.util";
 import { AppError } from "../middlewares/error.middleware";
 import { AppResponse, StatusCode } from "../utils/app-response";
+import logger from "../utils/logger.util";
 
 export class AuthController {
   private readonly userRepository: UserRepository;
@@ -40,6 +41,7 @@ export class AuthController {
         { url: authUrl }
       );
     } catch (error) {
+      logger.error({ err: error }, "Error generating Google URL: ", error);
       throw new AppError("Failed to generate Google URL", 500);
     }
   }
@@ -92,6 +94,7 @@ export class AuthController {
         { access_token: token }
       );
     } catch (error) {
+      logger.error({ err: error }, "Error during Google callback: ", error);
       throw new AppError("Failed to process Google callback", 500);
     }
   }
