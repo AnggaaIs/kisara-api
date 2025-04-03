@@ -11,7 +11,19 @@ class Database {
 
   private static readonly config: Options = {
     driver: PostgreSqlDriver,
-    clientUrl: `postgresql://${environment.db.user}:${environment.db.password}@${environment.db.host}:${environment.db.port}/${environment.db.name}`,
+    driverOptions: {
+      connection: {
+        ssl:
+          environment.nodeEnv === "production"
+            ? { rejectUnauthorized: false }
+            : false,
+      },
+    },
+    dbName: environment.db.name,
+    host: environment.db.host,
+    port: environment.db.port,
+    user: environment.db.user,
+    password: environment.db.password,
     entities: [User, Comment, ReplyComment],
     debug: environment.nodeEnv === "development",
     allowGlobalContext: true,

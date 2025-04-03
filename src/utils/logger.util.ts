@@ -39,6 +39,12 @@ const loggerOptions: LoggerOptions = {
       : {
           targets: [
             {
+              target: "pino-pretty",
+              options: {
+                colorize: true,
+              },
+            },
+            {
               target: "pino/file",
               options: { destination: path.join(logDir, "app.log") },
               level: "info",
