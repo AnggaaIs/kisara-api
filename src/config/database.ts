@@ -5,6 +5,7 @@ import { User } from "../entities/User";
 import { Comment } from "../entities/Comment";
 import { ReplyComment } from "../entities/ReplyComment";
 import { logger } from "../utils/logger.util";
+import path from "path";
 
 class Database {
   private static instance: MikroORM;
@@ -28,7 +29,7 @@ class Database {
     debug: environment.nodeEnv === "development",
     allowGlobalContext: true,
     migrations: {
-      path: "../../migrations",
+      path: path.resolve(__dirname, "../../migrations"),
       glob: "!(*.d).{js,ts}",
     },
   };
