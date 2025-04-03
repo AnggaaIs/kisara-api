@@ -13,6 +13,7 @@ class Database {
       try {
         Database.instance = await MikroORM.init(Database.config);
 
+        await Database.instance.getMigrator().createMigration();
         await Database.instance.getMigrator().up();
         logger.info(
           "Database connection established successfully and migrations applied. ✅"

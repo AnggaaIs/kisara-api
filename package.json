@@ -10,10 +10,7 @@
     "start:debug": "cross-env NODE_ENV=development ts-node --inspect-brk src/index.ts",
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix",
-    "format": "prettier --write \"src/**/*.ts\"",
-    "migrate:create": "mikro-orm migration:create --config ./src/configg/mikro-orm.config.ts ./dist/config/mikro-orm.config.js",
-    "migrate:up": "mikro-orm migration:up --config ./src/config/mikro-orm.config.ts ./dist/config/mikro-orm.config.js",
-    "migrate:down": "mikro-orm migration:down --config ./src/config/mikro-orm.config.ts ./dist/config/mikro-orm.config.js"
+    "format": "prettier --write \"src/**/*.ts\""
   },
   "keywords": [
     "KiSaRa",
