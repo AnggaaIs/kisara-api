@@ -96,6 +96,10 @@ export const errorHandler = (
   logger.error(
     `[${request.method}] ${request.url} - ${statusCode}: ${message} (Execution Time: ${executionTime}ms, IP: ${ip})`
   );
+  logger.error(
+    { err: error },
+    `Error occurred on ${request.method} ${request.url}:`
+  );
 
   const response = {
     status_code: statusCode,
