@@ -82,7 +82,7 @@ class FastifyApp {
 
       logger.info(`✅ Server running at http://localhost:${environment.port}`);
     } catch (error) {
-      logger.error("❌ Error during server startup:", error);
+      logger.error({ err: error }, "❌ Error during server startup:", error);
       process.exit(1);
     }
   }

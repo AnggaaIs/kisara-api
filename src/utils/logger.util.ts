@@ -35,13 +35,24 @@ const loggerOptions: LoggerOptions = {
   timestamp: pino.stdTimeFunctions.isoTime,
   transport:
     environment.nodeEnv !== "production"
-      ? { target: "pino-pretty", options: { colorize: true } }
+      ? {
+          target: "pino-pretty",
+          options: {
+            colorize: true,
+            translateTime: "SYS:standard",
+            ignore: "pid,hostname",
+            singleLine: true,
+          },
+        }
       : {
           targets: [
             {
               target: "pino-pretty",
               options: {
                 colorize: true,
+                translateTime: "SYS:standard",
+                ignore: "pid,hostname",
+                singleLine: true,
               },
             },
             {

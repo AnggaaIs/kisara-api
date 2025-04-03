@@ -43,7 +43,11 @@ class Database {
           "Database connection established successfully and migrations applied. ✅"
         );
       } catch (error) {
-        logger.error("Failed to connect to database: ❌", error);
+        logger.error(
+          { err: error },
+          "Failed to connect to database: ❌",
+          error
+        );
         throw error;
       }
     }

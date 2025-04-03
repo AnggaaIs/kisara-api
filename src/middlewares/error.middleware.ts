@@ -74,8 +74,8 @@ export const errorHandler = (
       );
 
       logger.error(
-        `Validation error on ${request.method} ${request.url}:`,
-        errors
+        { err: errors },
+        `Validation error on ${request.method} ${request.url}:`
       );
 
       return reply.status(400).send({
