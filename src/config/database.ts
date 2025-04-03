@@ -1,38 +1,12 @@
 import { MikroORM, Options } from "@mikro-orm/core";
-import { PostgreSqlDriver } from "@mikro-orm/postgresql";
-import { environment } from "./environment";
-import { User } from "../entities/User";
-import { Comment } from "../entities/Comment";
-import { ReplyComment } from "../entities/ReplyComment";
 import { logger } from "../utils/logger.util";
 import path from "path";
+import mikroOrmConfig from "./mikro-orm.config";
 
 class Database {
   private static instance: MikroORM;
 
-  private static readonly config: Options = {
-    driver: PostgreSqlDriver,
-    driverOptions: {
-      connection: {
-        ssl:
-          environment.nodeEnv === "production"
-            ? { rejectUnauthorized: false }
-            : false,
-      },
-    },
-    dbName: environment.db.name,
-    host: environment.db.host,
-    port: environment.db.port,
-    user: environment.db.user,
-    password: environment.db.password,
-    entities: [User, Comment, ReplyComment],
-    debug: environment.nodeEnv === "development",
-    allowGlobalContext: true,
-    migrations: {
-      path: path.resolve(__dirname, "../../migrations"),
-      glob: "!(*.d).{js,ts}",
-    },
-  };
+  private static readonly config: Options = mikroOrmConfig;
 
   public static async initialize(): Promise<MikroORM> {
     if (!Database.instance) {
