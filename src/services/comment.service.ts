@@ -146,7 +146,12 @@ export class CommentService {
   async getStats(): Promise<Record<string, any>> {
     const userCount = await this.userRepository.count();
     const commentCount = await this.commentRepository.count();
+    const replyCount = await this.replyCommentRepository.count();
 
-    return { user_count: userCount, comment_count: commentCount };
+    return {
+      user_count: userCount,
+      comment_count: commentCount,
+      reply_count: replyCount,
+    };
   }
 }

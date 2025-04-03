@@ -8,6 +8,7 @@ import { JwtUtil } from "../utils/jwt.util";
 import { AppError } from "../middlewares/error.middleware";
 import { AppResponse, StatusCode } from "../utils/app-response";
 import logger from "../utils/logger.util";
+import { GenerateUtil } from "../utils/generate.util";
 
 export class AuthController {
   private readonly userRepository: UserRepository;
@@ -73,11 +74,17 @@ export class AuthController {
         email: userInfo.email,
       });
 
+      const linkId = await GenerateUtil.generateUniqueLinkID(
+        Database.getORM().em,
+        7
+      );
+
       if (!existingUser) {
         await this.userRepository.create({
           email: userInfo.email,
           name: userInfo.name,
           profile_url: userInfo.picture,
+          link_id: linkId,
         });
       } else {
         await this.userRepository.update(existingUser.id, {
