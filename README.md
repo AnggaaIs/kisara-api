@@ -1,6 +1,6 @@
 # 🚀 Kisara API
 
-![Kisara API](https://kisara.my.id/icon.svg)
+![Kisara API](https://i.ibb.co.com/wh8PJ6JQ/image.png)
 
 ## ✨ Apa Itu Kisara API?
 
