@@ -6,6 +6,7 @@ import { ReplyComment } from "../entities/ReplyComment";
 import { environment } from "./environment";
 import { Migrator } from "@mikro-orm/migrations";
 import path from "path";
+import { RefreshToken } from "../entities/RefreshToken";
 
 const config: Options = {
   driver: PostgreSqlDriver,
@@ -22,7 +23,7 @@ const config: Options = {
   port: environment.db.port,
   user: environment.db.user,
   password: environment.db.password,
-  entities: [User, Comment, ReplyComment],
+  entities: [User, Comment, ReplyComment, RefreshToken],
   debug: environment.nodeEnv === "development",
   allowGlobalContext: true,
   migrations: {

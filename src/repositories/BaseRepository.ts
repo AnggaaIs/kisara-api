@@ -1,6 +1,5 @@
 import { EntityRepository } from "@mikro-orm/postgresql";
-import { FilterQuery } from "@mikro-orm/core";
-
+import { FilterQuery, FindOneOptions } from "@mikro-orm/core";
 export class BaseRepository<T extends object> {
   constructor(public readonly repository: EntityRepository<T>) {}
 
@@ -11,8 +10,11 @@ export class BaseRepository<T extends object> {
     });
   }
 
-  async findOne(where: FilterQuery<T>): Promise<T | null> {
-    return this.repository.findOne(where);
+  async findOne(
+    where: FilterQuery<T>,
+    options?: FindOneOptions<T>
+  ): Promise<T | null> {
+    return this.repository.findOne(where, options);
   }
 
   async findById(id: any): Promise<T | null> {
@@ -48,5 +50,13 @@ export class BaseRepository<T extends object> {
 
   async save(entity: T): Promise<void> {
     await this.repository.getEntityManager().persistAndFlush(entity);
+  }
+
+  // Helper method untuk find dengan populate yang lebih mudah digunakan
+  async findOneWithPopulate(
+    where: FilterQuery<T>,
+    populate: string[]
+  ): Promise<T | null> {
+    return this.repository.findOne(where, { populate: populate as any });
   }
 }

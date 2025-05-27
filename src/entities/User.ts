@@ -53,6 +53,9 @@ export class User {
   @Property({ nullable: true })
   profile_url?: string;
 
+  @Property({ nullable: true })
+  google_id?: string;
+
   @OneToMany(() => Comment, (comment) => comment.user)
   comments = new Collection<Comment>(this);
 
