@@ -13,8 +13,21 @@ class Database {
       try {
         Database.instance = await MikroORM.init(Database.config);
 
-        await Database.instance.getMigrator().createMigration();
-        await Database.instance.getMigrator().up();
+        const migrator = Database.instance.getMigrator();
+
+        const diff = await Database.instance
+          .getSchemaGenerator()
+          .getUpdateSchemaSQL();
+
+        if (diff.length > 0) {
+          logger.info("Schema changes detected, creating migration...");
+
+          await migrator.createMigration();
+          logger.info("New migration created ✅");
+        }
+
+        await migrator.up();
+
         logger.info(
           "Database connection established successfully and migrations applied. ✅"
         );
