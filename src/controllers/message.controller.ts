@@ -103,6 +103,7 @@ export class MessageController {
         total_pages: Math.ceil(total / limit),
         author: {
           name: user.name,
+          role: user.role,
           profile_url: user.profile_url,
         },
         comments: filteredComments,
