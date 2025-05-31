@@ -1,16 +1,34 @@
 import { FastifyRequest, FastifyReply } from "fastify";
-import { JwtUtil } from "../utils/jwt.util";
 import { AppError } from "./error.middleware";
+import { AuthService } from "../services/auth.service";
+import { UserService } from "../services/user.service";
+import { UserRepository } from "../repositories/UserRepository";
+import { Database } from "../config/database";
+import { User } from "../entities/User";
 
 export interface AuthUser {
   email: string;
   role: string;
+  id: string;
 }
 
 declare module "fastify" {
   interface FastifyRequest {
     user?: AuthUser;
   }
+}
+
+let authServiceInstance: AuthService | null = null;
+
+function getAuthService(): AuthService {
+  if (!authServiceInstance) {
+    const userRepository = new UserRepository(
+      Database.getORM().em.getRepository(User)
+    );
+    const userService = new UserService(userRepository);
+    authServiceInstance = new AuthService(userService);
+  }
+  return authServiceInstance;
 }
 
 export const authenticate = async (
@@ -25,13 +43,20 @@ export const authenticate = async (
     }
 
     const token = authHeader.split(" ")[1];
-    const decoded = JwtUtil.verifyToken(token);
+
+    const authService = getAuthService();
+
+    const user = await authService.validateToken(token);
 
     request.user = {
-      email: decoded.email,
-      role: decoded.role,
+      id: user.id,
+      email: user.email,
+      role: user.role,
     };
   } catch (error) {
+    if (error instanceof AppError) {
+      throw error;
+    }
     throw new AppError("Unauthorized: Invalid token", 401);
   }
 };
