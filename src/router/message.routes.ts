@@ -73,6 +73,7 @@ export class MessageRoutes {
             schema: {
               body: MessageBodyPost,
             },
+            preHandler: authenticate,
             config: {
               rateLimit: this.rateLimitOptions,
             },

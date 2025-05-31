@@ -5,9 +5,12 @@ import {
   Enum,
   Collection,
   PrimaryKey,
+  OneToOne,
+  Ref,
 } from "@mikro-orm/core";
 import { Comment } from "./Comment";
 import { v4 as uuidv4 } from "uuid";
+import { UserNotificationSetting } from "./UserNotificationSetting";
 
 export enum Role {
   USER = "USER",
@@ -49,6 +52,11 @@ export class User {
 
   @Enum(() => Role)
   role: Role = Role.USER;
+
+  @OneToOne(() => UserNotificationSetting, (setting) => setting.user, {
+    nullable: true,
+  })
+  notification_setting?: Ref<UserNotificationSetting>;
 
   @Property({ nullable: true })
   profile_url?: string;

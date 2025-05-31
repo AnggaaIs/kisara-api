@@ -8,9 +8,9 @@ import { UserRepository } from "../repositories/UserRepository";
 import { AppError } from "../middlewares/error.middleware";
 import { AppResponse, StatusCode } from "../utils/app-response";
 import { User } from "../entities/User";
-import { wrap } from "@mikro-orm/core";
 import { CommentService } from "../services/comment.service";
 import { UserService } from "../services/user.service";
+import { NotificationService } from "../services/notification.service";
 
 export class MessageController {
   private readonly commentRepository: CommentRepository;
@@ -18,6 +18,7 @@ export class MessageController {
   private readonly userRepository: UserRepository;
   public readonly userService: UserService;
   public readonly commentService: CommentService;
+  private readonly notificationService: NotificationService;
 
   constructor() {
     this.commentRepository = new CommentRepository(
@@ -36,6 +37,7 @@ export class MessageController {
       this.userRepository,
       this.userService
     );
+    this.notificationService = new NotificationService();
   }
 
   async handleMessagePost(req: FastifyRequest, reply: FastifyReply) {
@@ -43,6 +45,22 @@ export class MessageController {
     const { message_content } = req.body as { message_content: string };
 
     const comment = await this.commentService.create(link_id, message_content);
+
+    const recipientUser = await this.userRepository.findByLinkId(link_id);
+
+    if (recipientUser) {
+      await this.notificationService.sendMessageNotification(
+        recipientUser.email,
+        {
+          type: "new_message",
+          messageId: comment.id,
+          senderId: "anonymous",
+          senderName: "Seseorang",
+          content: message_content,
+          linkId: link_id,
+        }
+      );
+    }
 
     return AppResponse.sendSuccessResponse(
       req,
@@ -191,7 +209,6 @@ export class MessageController {
     );
   }
 
-  // Method for getting replies to a message
   async handleReplyMessageGet(req: FastifyRequest, reply: FastifyReply) {
     const { link_id, message_id } = req.params as {
       link_id: string;
@@ -245,7 +262,6 @@ export class MessageController {
     );
   }
 
-  // Method for deleting a reply to a message
   async handleDeleteReplyMessage(req: FastifyRequest, reply: FastifyReply) {
     const { link_id, message_id, reply_id } = req.params as {
       link_id: string;
@@ -293,7 +309,6 @@ export class MessageController {
     );
   }
 
-  // Method for liking a message
   async handleLikeMessage(req: FastifyRequest, reply: FastifyReply) {
     const { link_id, message_id } = req.params as {
       link_id: string;

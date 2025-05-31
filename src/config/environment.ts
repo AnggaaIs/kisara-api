@@ -41,4 +41,13 @@ export const environment = {
         )
       : ["Content-Type", "Authorization", "X-Requested-With"],
   },
+
+  firebase: {
+    projectId: process.env.FIREBASE_PROJECT_ID || "",
+    privateKeyId: process.env.FIREBASE_PRIVATE_KEY_ID || "",
+    privateKey: process.env.FIREBASE_PRIVATE_KEY || "",
+    clientEmail: process.env.FIREBASE_CLIENT_EMAIL || "",
+    clientId: process.env.FIREBASE_CLIENT_ID || "",
+    clientCertUrl: process.env.FIREBASE_CLIENT_CERT_URL || "",
+  },
 };
