@@ -10,7 +10,7 @@ export class UserNotificationSetting {
   @OneToOne(() => User, { owner: true })
   user!: Ref<User>;
 
-  @Property()
+  @Property({ nullable: true })
   fcm_token?: string;
 
   @Property({ default: true })
