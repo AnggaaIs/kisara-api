@@ -16,9 +16,6 @@ import { UserController } from "./controllers/user.controller";
 import { MessageController } from "./controllers/message.controller";
 import { logger } from "./utils/logger.util";
 import { HomeController } from "./controllers/home.controller";
-import { NotificationController } from "./controllers/notification.controller";
-import { NotificationRoutes } from "./router/notification.routes";
-import { FirebaseAdmin } from "./config/firebase";
 
 class FastifyApp {
   private app = Fastify({ loggerInstance: logger as FastifyBaseLogger });
@@ -63,13 +60,11 @@ class FastifyApp {
     const userController = new UserController();
     const messageController = new MessageController();
     const homeController = new HomeController();
-    const notificationController = new NotificationController();
 
     new AuthRoutes(authController).registerRoutes(this.app);
     new UserRoutes(userController).registerRoutes(this.app);
     new MessageRoutes(messageController).registerRoutes(this.app);
     new HomeRoutes(homeController).registerRoutes(this.app);
-    new NotificationRoutes(notificationController).registerRoutes(this.app);
   }
 
   public async start() {
@@ -77,10 +72,6 @@ class FastifyApp {
       logger.info("⏳ Initializing database...");
       await Database.initialize();
       logger.info("✅ Database initialized successfully.");
-
-      logger.info("⏳ Initializing Firebase Admin...");
-      FirebaseAdmin.initialize();
-      logger.info("✅ Firebase Admin initialized successfully.");
 
       await this.setupPlugins();
       this.setupHooks();

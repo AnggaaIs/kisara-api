@@ -10,7 +10,6 @@ import { AppResponse, StatusCode } from "../utils/app-response";
 import { User } from "../entities/User";
 import { CommentService } from "../services/comment.service";
 import { UserService } from "../services/user.service";
-import { NotificationService } from "../services/notification.service";
 
 export class MessageController {
   private readonly commentRepository: CommentRepository;
@@ -18,7 +17,6 @@ export class MessageController {
   private readonly userRepository: UserRepository;
   public readonly userService: UserService;
   public readonly commentService: CommentService;
-  private readonly notificationService: NotificationService;
 
   constructor() {
     this.commentRepository = new CommentRepository(
@@ -37,7 +35,6 @@ export class MessageController {
       this.userRepository,
       this.userService
     );
-    this.notificationService = new NotificationService();
   }
 
   async handleMessagePost(req: FastifyRequest, reply: FastifyReply) {
@@ -48,19 +45,20 @@ export class MessageController {
 
     const recipientUser = await this.userRepository.findByLinkId(link_id);
 
-    if (recipientUser) {
-      await this.notificationService.sendMessageNotification(
-        recipientUser.email,
-        {
-          type: "new_message",
-          messageId: comment.id,
-          senderId: "anonymous",
-          senderName: "Seseorang",
-          content: message_content,
-          linkId: link_id,
-        }
-      );
-    }
+    // Notification functionality removed (was for mobile app)
+    // if (recipientUser) {
+    //   await this.notificationService.sendMessageNotification(
+    //     recipientUser.email,
+    //     {
+    //       type: "new_message",
+    //       messageId: comment.id,
+    //       senderId: "anonymous",
+    //       senderName: "Seseorang",
+    //       content: message_content,
+    //       linkId: link_id,
+    //     }
+    //   );
+    // }
 
     return AppResponse.sendSuccessResponse(
       req,

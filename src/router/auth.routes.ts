@@ -1,10 +1,6 @@
 import { FastifyInstance } from "fastify";
 import { AuthController } from "../controllers/auth.controller";
-import {
-  AuthGoogleCallbackBody,
-  AuthGoogleMobileBody,
-  RefreshTokenBody,
-} from "../models/validation";
+import { AuthGoogleCallbackBody } from "../models/validation";
 import { RateLimitOptions } from "@fastify/rate-limit";
 
 export class AuthRoutes {
@@ -39,45 +35,6 @@ export class AuthRoutes {
             },
           },
           this.authController.handleGoogleCallback.bind(this.authController)
-        );
-
-        instance.post<{ Body: typeof AuthGoogleMobileBody }>(
-          "/google/mobile",
-          {
-            schema: {
-              body: AuthGoogleMobileBody,
-            },
-            config: {
-              rateLimit: this.rateLimitOptions,
-            },
-          },
-          this.authController.handleGoogleMobileLogin.bind(this.authController)
-        );
-
-        instance.post<{ Body: typeof RefreshTokenBody }>(
-          "/google/refresh",
-          {
-            schema: {
-              body: RefreshTokenBody,
-            },
-            config: {
-              rateLimit: this.rateLimitOptions,
-            },
-          },
-          this.authController.handleRefreshToken.bind(this.authController)
-        );
-
-        instance.post<{ Body: typeof RefreshTokenBody }>(
-          "/google/logout",
-          {
-            schema: {
-              body: RefreshTokenBody,
-            },
-            config: {
-              rateLimit: this.rateLimitOptions,
-            },
-          },
-          this.authController.handleLogout.bind(this.authController)
         );
 
         done();
