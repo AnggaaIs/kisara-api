@@ -2,11 +2,11 @@
   "name": "kisara-api",
   "version": "1.0.0",
   "description": "API untuk website kisara.my.id yang menyediakan layanan dan fitur berbasis Fastify dan Mikro-ORM. Dibangun untuk performa tinggi dan skalabilitas.",
-  "main": "dist/index.js",
+  "main": "dist/src/index.js",
   "scripts": {
     "dev": "cross-env NODE_ENV=development ts-node-dev --respawn --transpile-only src/index.ts",
     "build": "tsc",
-    "start": "cross-env NODE_ENV=production node dist/index.js",
+    "start": "cross-env NODE_ENV=production node dist/src/index.js",
     "start:debug": "cross-env NODE_ENV=development ts-node --inspect-brk src/index.ts",
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix",
