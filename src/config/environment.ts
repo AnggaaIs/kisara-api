@@ -6,7 +6,7 @@ const envFile =
     ? ".env.production"
     : ".env.development";
 
-dotenv.config({ path: path.resolve(__dirname, `../../${envFile}`) });
+dotenv.config({ path: path.resolve(__dirname, `../../../${envFile}`) });
 
 export const environment = {
   nodeEnv: process.env.NODE_ENV || "development",
