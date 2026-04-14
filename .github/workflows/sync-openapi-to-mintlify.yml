@@ -52,12 +52,12 @@ jobs:
       - name: Commit and push if changed
         working-directory: docs-repo
         run: |
-          if git diff --quiet -- openapi/openapi.json; then
+          git add openapi/openapi.json
+          if git diff --cached --quiet; then
             echo "No OpenAPI changes detected"
             exit 0
           fi
           git config user.name "kisara-bot"
           git config user.email "actions@users.noreply.github.com"
-          git add openapi/openapi.json
           git commit -m "chore: sync OpenAPI from kisara-api"
           git push
