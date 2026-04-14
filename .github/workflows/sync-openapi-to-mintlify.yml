@@ -22,24 +22,45 @@ jobs:
           if [ -z "$URL" ]; then
             URL="https://api.kisara.my.id/openapi.json"
           fi
+          FALLBACK_URL="${{ vars.OPENAPI_SOURCE_URL_FALLBACK }}"
           echo "url=$URL" >> "$GITHUB_OUTPUT"
+          echo "fallback_url=$FALLBACK_URL" >> "$GITHUB_OUTPUT"
 
       - name: Download OpenAPI spec
         run: |
           URL="${{ steps.source.outputs.url }}"
-          if ! curl -fLsS \
+          FALLBACK_URL="${{ steps.source.outputs.fallback_url }}"
+
+          download() {
+            local TARGET_URL="$1"
+            curl -fLsS \
             --retry 3 \
             --retry-all-errors \
             --connect-timeout 20 \
             --max-time 90 \
             -A "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36" \
             -H "Accept: application/json" \
-            "$URL" -o openapi.json; then
-            echo "Failed to download OpenAPI from $URL"
+            "$TARGET_URL" -o openapi.json
+          }
+
+          if ! download "$URL"; then
+            echo "Failed to download OpenAPI from primary URL: $URL"
             echo "Response headers for diagnostics:"
             curl -IsS "$URL" || true
-            echo "Likely blocked by Cloudflare/WAF for GitHub Actions IP."
-            exit 1
+
+            if [ -n "$FALLBACK_URL" ]; then
+              echo "Trying fallback URL: $FALLBACK_URL"
+              if ! download "$FALLBACK_URL"; then
+                echo "Failed to download OpenAPI from fallback URL: $FALLBACK_URL"
+                echo "Response headers for fallback diagnostics:"
+                curl -IsS "$FALLBACK_URL" || true
+                exit 1
+              fi
+            else
+              echo "Likely blocked by Cloudflare/WAF for GitHub Actions IP."
+              echo "Set OPENAPI_SOURCE_URL_FALLBACK to a DNS-only origin URL to bypass proxy challenge."
+              exit 1
+            fi
           fi
           node -e "JSON.parse(require('fs').readFileSync('openapi.json','utf8')); console.log('OpenAPI JSON valid')"
 

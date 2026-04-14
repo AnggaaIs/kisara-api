@@ -119,6 +119,7 @@ Set repository variable dan secret berikut di GitHub repo ini:
 
 - `MINTLIFY_DOCS_REPO` = `owner/repo-docs-mintlify`
 - `OPENAPI_SOURCE_URL` = `https://api.kisara.my.id/openapi.json` (opsional)
+- `OPENAPI_SOURCE_URL_FALLBACK` = `https://openapi-origin.kisara.my.id/openapi.json` (opsional, direkomendasikan jika URL utama diproxy Cloudflare)
 - `MINTLIFY_DOCS_PAT` = GitHub PAT dengan permission `contents:write` ke repo docs
 
 Setelah itu, jalankan workflow `Sync OpenAPI to Mintlify Repo` via Actions.
