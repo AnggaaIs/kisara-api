@@ -121,6 +121,12 @@ Set repository variable dan secret berikut di GitHub repo ini:
 - `OPENAPI_SOURCE_URL` = `https://api.kisara.my.id/openapi.json` (opsional)
 - `OPENAPI_SOURCE_URL_FALLBACK` = `https://openapi-origin.kisara.my.id/openapi.json` (opsional, direkomendasikan jika URL utama diproxy Cloudflare)
 - `MINTLIFY_DOCS_PAT` = GitHub PAT dengan permission `contents:write` ke repo docs
+- `CF_ACCOUNT_ID` = Cloudflare Account ID
+- `CF_ZONE_ID` = Cloudflare Zone ID untuk `kisara.my.id`
+- `CF_API_TOKEN` = Cloudflare API token dengan permission:
+  - Account > Account Filter Lists > Edit
+  - Zone > Zone WAF > Edit
+  - Zone > Zone Settings > Edit (karena workflow ini menonaktifkan Bot Fight Mode sementara)
 
 Setelah itu, jalankan workflow `Sync OpenAPI to Mintlify Repo` via Actions.
 

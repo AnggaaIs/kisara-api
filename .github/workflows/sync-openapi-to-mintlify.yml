@@ -26,6 +26,14 @@ jobs:
           echo "url=$URL" >> "$GITHUB_OUTPUT"
           echo "fallback_url=$FALLBACK_URL" >> "$GITHUB_OUTPUT"
 
+      - name: Bypass Cloudflare for GitHub Action
+        uses: xiaotianxt/bypass-cloudflare-for-github-action@v2.1.0
+        with:
+          cf_account_id: ${{ secrets.CF_ACCOUNT_ID }}
+          cf_zone_id: ${{ secrets.CF_ZONE_ID }}
+          cf_api_token: ${{ secrets.CF_API_TOKEN }}
+          disable_bot_fight_mode: "true"
+
       - name: Download OpenAPI spec
         run: |
           URL="${{ steps.source.outputs.url }}"
