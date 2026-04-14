@@ -2,7 +2,6 @@ import { Comment } from "../entities/Comment";
 import { ReplyComment } from "../entities/ReplyComment";
 import { CommentRepository } from "../repositories/CommentRepository";
 import { ReplyCommentRepository } from "../repositories/ReplyCommentRepository";
-import { UserService } from "./user.service";
 import { AppError } from "../middlewares/error.middleware";
 import { Reference, wrap } from "@mikro-orm/core";
 import { StatusCode } from "../utils/app-response";
@@ -12,8 +11,7 @@ export class CommentService {
   constructor(
     private readonly commentRepository: CommentRepository,
     private readonly replyCommentRepository: ReplyCommentRepository,
-    private readonly userRepository: UserRepository,
-    private readonly userService: UserService
+    private readonly userRepository: UserRepository
   ) {}
 
   async findAll(options?: {
@@ -86,17 +84,12 @@ export class CommentService {
 
   async replyToComment(
     commentId: string,
-    userEmail: string,
+    _userEmail: string,
     replyContent: string
   ): Promise<ReplyComment> {
     const parentComment = await this.commentRepository.findById(commentId);
     if (!parentComment) {
       throw new AppError(`Comment with id ${commentId} not found`, 404);
-    }
-
-    const user = await this.userService.findByEmail(userEmail);
-    if (!user) {
-      throw new AppError(`User with email ${userEmail} not found`, 404);
     }
 
     return this.replyCommentRepository.create({
@@ -144,9 +137,11 @@ export class CommentService {
   }
 
   async getStats(): Promise<Record<string, any>> {
-    const userCount = await this.userRepository.count();
-    const commentCount = await this.commentRepository.count();
-    const replyCount = await this.replyCommentRepository.count();
+    const [userCount, commentCount, replyCount] = await Promise.all([
+      this.userRepository.count(),
+      this.commentRepository.count(),
+      this.replyCommentRepository.count(),
+    ]);
 
     return {
       user_count: userCount,

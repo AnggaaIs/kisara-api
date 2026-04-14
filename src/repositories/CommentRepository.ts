@@ -1,6 +1,6 @@
 import { Comment } from "../entities/Comment";
 import { BaseRepository } from "./BaseRepository";
-import { EntityRepository } from "@mikro-orm/postgresql";
+import { EntityRepository, QueryOrder } from "@mikro-orm/postgresql";
 
 export class CommentRepository extends BaseRepository<Comment> {
   constructor(repository: EntityRepository<Comment>) {
@@ -21,10 +21,12 @@ export class CommentRepository extends BaseRepository<Comment> {
     page: number,
     limit: number
   ): Promise<[Comment[], number]> {
+    const order = sortBy === "desc" ? QueryOrder.DESC : QueryOrder.ASC;
+
     const [comments, total] = await this.repository.findAndCount(
       { user_email: userEmail },
       {
-        orderBy: { created_at: sortBy },
+        orderBy: { created_at: order },
         limit,
         offset: (page - 1) * limit,
       }

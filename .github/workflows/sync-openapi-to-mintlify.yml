@@ -1,0 +1,63 @@
+name: Sync OpenAPI to Mintlify Repo
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+    paths:
+      - src/router/**
+      - src/models/validation/**
+      - src/config/api-docs.ts
+      - src/controllers/**
+
+jobs:
+  sync-openapi:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Determine source OpenAPI URL
+        id: source
+        run: |
+          URL="${{ vars.OPENAPI_SOURCE_URL }}"
+          if [ -z "$URL" ]; then
+            URL="https://api.kisara.my.id/openapi.json"
+          fi
+          echo "url=$URL" >> "$GITHUB_OUTPUT"
+
+      - name: Download OpenAPI spec
+        run: |
+          curl -fsSL "${{ steps.source.outputs.url }}" -o openapi.json
+          node -e "JSON.parse(require('fs').readFileSync('openapi.json','utf8')); console.log('OpenAPI JSON valid')"
+
+      - name: Clone Mintlify docs repository
+        env:
+          MINTLIFY_DOCS_REPO: ${{ vars.MINTLIFY_DOCS_REPO }}
+          MINTLIFY_DOCS_PAT: ${{ secrets.MINTLIFY_DOCS_PAT }}
+        run: |
+          if [ -z "$MINTLIFY_DOCS_REPO" ]; then
+            echo "Repository variable MINTLIFY_DOCS_REPO is required (format: owner/repo)"
+            exit 1
+          fi
+          if [ -z "$MINTLIFY_DOCS_PAT" ]; then
+            echo "Secret MINTLIFY_DOCS_PAT is required (contents:write on docs repo)"
+            exit 1
+          fi
+          git clone "https://x-access-token:${MINTLIFY_DOCS_PAT}@github.com/${MINTLIFY_DOCS_REPO}.git" docs-repo
+
+      - name: Update OpenAPI file in docs repo
+        run: |
+          mkdir -p docs-repo/openapi
+          cp openapi.json docs-repo/openapi/openapi.json
+
+      - name: Commit and push if changed
+        working-directory: docs-repo
+        run: |
+          if git diff --quiet -- openapi/openapi.json; then
+            echo "No OpenAPI changes detected"
+            exit 0
+          fi
+          git config user.name "kisara-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add openapi/openapi.json
+          git commit -m "chore: sync OpenAPI from kisara-api"
+          git push

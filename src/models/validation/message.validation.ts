@@ -5,6 +5,15 @@ export const MessageBodyPost = Type.Object({
 });
 
 export const MessageBodyGet = Type.Object({
+  sortBy: Type.Optional(
+    Type.Enum(
+      {
+        asc: "asc",
+        desc: "desc",
+      },
+      { default: "desc" }
+    )
+  ),
   sort_by: Type.Optional(
     Type.Enum(
       {

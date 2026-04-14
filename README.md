@@ -86,6 +86,43 @@ pnpm dev  # atau npm run dev / yarn dev
 pnpm build && pnpm start  # atau npm run build && npm start / yarn build && yarn start
 ```
 
+## 📚 API Docs Otomatis (Tanpa Swagger UI)
+
+Dokumentasi API sekarang digenerate otomatis dari schema route Fastify + TypeBox.
+
+- OpenAPI JSON: `http://localhost:3000/openapi.json`
+- OpenAPI YAML: `http://localhost:3000/openapi.yaml`
+
+Env opsional:
+
+- `API_PUBLIC_URL=https://api.kisara.my.id`
+
+Pendekatan ini cocok untuk project besar karena:
+
+- Tidak perlu nulis docs manual per endpoint
+- Selalu sinkron dengan validasi request/response di code
+- Tetap bisa dipakai ke Postman, Stoplight, Insomnia, Scalar, Redoc, dll
+
+## 🧩 Mintlify Integration (Template + Auto Sync)
+
+Template Mintlify sudah disiapkan di folder `mintlify-template/`:
+
+- `mintlify-template/docs.json`
+- `mintlify-template/index.mdx`
+- `mintlify-template/api/overview.mdx`
+
+Workflow auto-sync OpenAPI ke repo docs Mintlify:
+
+- `.github/workflows/sync-openapi-to-mintlify.yml`
+
+Set repository variable dan secret berikut di GitHub repo ini:
+
+- `MINTLIFY_DOCS_REPO` = `owner/repo-docs-mintlify`
+- `OPENAPI_SOURCE_URL` = `https://api.kisara.my.id/openapi.json` (opsional)
+- `MINTLIFY_DOCS_PAT` = GitHub PAT dengan permission `contents:write` ke repo docs
+
+Setelah itu, jalankan workflow `Sync OpenAPI to Mintlify Repo` via Actions.
+
 ## 📂 Struktur Proyek
 
 ```

@@ -2,6 +2,7 @@ import { UserService } from "./user.service";
 import { AppError } from "../middlewares/error.middleware";
 import { User } from "../entities/User";
 import jsonwebtoken from "jsonwebtoken";
+import { environment } from "../config/environment";
 
 export interface LoginResponse {
   user: Partial<User>;
@@ -15,7 +16,7 @@ export class AuthService {
     try {
       const decoded = jsonwebtoken.verify(
         token,
-        process.env.JWT_SECRET as string
+        environment.jwt.secret
       ) as { email: string; role: string };
 
       if (!decoded || !decoded.email) {
@@ -43,7 +44,7 @@ export class AuthService {
 
   isTokenValid(token: string): boolean {
     try {
-      jsonwebtoken.verify(token, process.env.JWT_SECRET as string);
+      jsonwebtoken.verify(token, environment.jwt.secret);
       return true;
     } catch {
       return false;
@@ -52,10 +53,55 @@ export class AuthService {
 
   isTokenExpired(token: string): boolean {
     try {
-      jsonwebtoken.verify(token, process.env.JWT_SECRET as string);
+      jsonwebtoken.verify(token, environment.jwt.secret);
       return false;
     } catch (error) {
       return error instanceof jsonwebtoken.TokenExpiredError;
+    }
+  }
+  generateTokens(user: User): { accessToken: string; refreshToken: string } {
+    const accessToken = jsonwebtoken.sign(
+      {
+        email: user.email,
+        role: user.role,
+        id: user.id,
+      },
+      environment.jwt.secret,
+      { expiresIn: environment.jwt.expiresIn }
+    );
+
+    const refreshToken = jsonwebtoken.sign(
+      {
+        email: user.email,
+        id: user.id,
+      },
+      environment.jwt.refreshSecret,
+      { expiresIn: environment.jwt.refreshExpiresIn }
+    );
+
+    return { accessToken, refreshToken };
+  }
+
+  async verifyRefreshToken(token: string): Promise<User> {
+    try {
+      const decoded = jsonwebtoken.verify(
+        token,
+        environment.jwt.refreshSecret
+      ) as { email: string; id: string };
+
+      const user = await this.userService.findByEmail(decoded.email);
+
+      if (!user) {
+        throw new AppError("User not found", 404);
+      }
+
+      if (user.refresh_token !== token) {
+        throw new AppError("Invalid refresh token", 401);
+      }
+
+      return user;
+    } catch (error) {
+      throw new AppError("Invalid refresh token", 401);
     }
   }
 }

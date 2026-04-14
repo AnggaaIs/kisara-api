@@ -5,6 +5,7 @@ import {
   Enum,
   Collection,
   PrimaryKey,
+  Index,
 } from "@mikro-orm/core";
 import { Comment } from "./Comment";
 import { v4 as uuidv4 } from "uuid";
@@ -39,6 +40,7 @@ export class User {
   email!: string;
 
   @Property()
+  @Index()
   name!: string;
 
   @Property({ nullable: true })
@@ -55,6 +57,9 @@ export class User {
 
   @Property({ nullable: true })
   google_id?: string;
+
+  @Property({ nullable: true })
+  refresh_token?: string;
 
   @OneToMany(() => Comment, (comment) => comment.user)
   comments = new Collection<Comment>(this);

@@ -1,4 +1,4 @@
-import { Options } from "@mikro-orm/core";
+import { LoadStrategy, Options } from "@mikro-orm/core";
 import { PostgreSqlDriver } from "@mikro-orm/postgresql";
 import { User } from "../entities/User";
 import { Comment } from "../entities/Comment";
@@ -22,6 +22,11 @@ const config: Options = {
   port: environment.db.port,
   user: environment.db.user,
   password: environment.db.password,
+  loadStrategy: LoadStrategy.SELECT_IN,
+  pool: {
+    min: 2,
+    max: 20,
+  },
   entities: [User, Comment, ReplyComment],
   debug: environment.nodeEnv === "development",
   allowGlobalContext: true,

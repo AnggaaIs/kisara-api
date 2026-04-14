@@ -7,14 +7,12 @@ import { CommentRepository } from "../repositories/CommentRepository";
 import { ReplyCommentRepository } from "../repositories/ReplyCommentRepository";
 import { UserRepository } from "../repositories/UserRepository";
 import { CommentService } from "../services/comment.service";
-import { UserService } from "../services/user.service";
 import { AppResponse, StatusCode } from "../utils/app-response";
 
 export class HomeController {
   private readonly commentRepository: CommentRepository;
   private readonly replyCommentRepository: ReplyCommentRepository;
   private readonly userRepository: UserRepository;
-  public readonly userService: UserService;
   public readonly commentService: CommentService;
 
   constructor() {
@@ -27,12 +25,10 @@ export class HomeController {
     this.userRepository = new UserRepository(
       Database.getORM().em.getRepository(User)
     );
-    this.userService = new UserService(this.userRepository);
     this.commentService = new CommentService(
       this.commentRepository,
       this.replyCommentRepository,
-      this.userRepository,
-      this.userService
+      this.userRepository
     );
   }
 

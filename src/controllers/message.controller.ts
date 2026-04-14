@@ -9,13 +9,11 @@ import { AppError } from "../middlewares/error.middleware";
 import { AppResponse, StatusCode } from "../utils/app-response";
 import { User } from "../entities/User";
 import { CommentService } from "../services/comment.service";
-import { UserService } from "../services/user.service";
 
 export class MessageController {
   private readonly commentRepository: CommentRepository;
   private readonly replyCommentRepository: ReplyCommentRepository;
   private readonly userRepository: UserRepository;
-  public readonly userService: UserService;
   public readonly commentService: CommentService;
 
   constructor() {
@@ -28,12 +26,10 @@ export class MessageController {
     this.userRepository = new UserRepository(
       Database.getORM().em.getRepository(User)
     );
-    this.userService = new UserService(this.userRepository);
     this.commentService = new CommentService(
       this.commentRepository,
       this.replyCommentRepository,
-      this.userRepository,
-      this.userService
+      this.userRepository
     );
   }
 
@@ -42,23 +38,6 @@ export class MessageController {
     const { message_content } = req.body as { message_content: string };
 
     const comment = await this.commentService.create(link_id, message_content);
-
-    const recipientUser = await this.userRepository.findByLinkId(link_id);
-
-    // Notification functionality removed (was for mobile app)
-    // if (recipientUser) {
-    //   await this.notificationService.sendMessageNotification(
-    //     recipientUser.email,
-    //     {
-    //       type: "new_message",
-    //       messageId: comment.id,
-    //       senderId: "anonymous",
-    //       senderName: "Seseorang",
-    //       content: message_content,
-    //       linkId: link_id,
-    //     }
-    //   );
-    // }
 
     return AppResponse.sendSuccessResponse(
       req,
@@ -76,14 +55,17 @@ export class MessageController {
   async handleMessageGet(req: FastifyRequest, reply: FastifyReply) {
     const { link_id } = req.params as { link_id: string };
     const {
-      sortBy = "desc",
+      sortBy,
+      sort_by,
       page = 1,
       limit = 10,
     } = req.query as {
       sortBy?: "asc" | "desc";
+      sort_by?: "asc" | "desc";
       page?: number;
       limit?: number;
     };
+    const sort = sortBy ?? sort_by ?? "desc";
 
     const user = await this.userRepository.findByLinkId(link_id);
     if (!user) {
@@ -95,7 +77,7 @@ export class MessageController {
 
     const [comments, total] = await this.commentRepository.getComments(
       user.email,
-      sortBy,
+      sort,
       page,
       limit
     );
@@ -190,8 +172,8 @@ export class MessageController {
 
     const replyComment = await this.commentService.replyToComment(
       message_id,
-      message_content,
-      user.email
+      user.email,
+      message_content
     );
 
     return AppResponse.sendSuccessResponse(
@@ -214,16 +196,23 @@ export class MessageController {
       message_id: string;
     };
     const {
-      sortBy = "desc",
+      sortBy,
+      sort_by,
       page = 1,
       limit = 10,
     } = req.query as {
       sortBy?: "asc" | "desc";
+      sort_by?: "asc" | "desc";
       page?: number;
       limit?: number;
     };
+    const sort = sortBy ?? sort_by ?? "desc";
 
-    const user = await this.userRepository.findByLinkId(link_id);
+    const [user, comment] = await Promise.all([
+      this.userRepository.findByLinkId(link_id),
+      this.commentRepository.findById(message_id),
+    ]);
+
     if (!user) {
       throw new AppError(
         `User with link_id ${link_id} not found`,
@@ -231,7 +220,6 @@ export class MessageController {
       );
     }
 
-    const comment = await this.commentRepository.findById(message_id);
     if (!comment) {
       throw new AppError(
         `Message with id ${message_id} not found`,
@@ -241,7 +229,7 @@ export class MessageController {
 
     const [replies, total] = await this.replyCommentRepository.getReplies(
       message_id,
-      sortBy,
+      sort,
       page,
       limit
     );

@@ -3,6 +3,17 @@ import { UserUpdateBody } from "../models/validation";
 import { UserController } from "../controllers/user.controller";
 import { authenticate } from "../middlewares/auth.middleware";
 import { RateLimitOptions } from "@fastify/rate-limit";
+import {
+  ApiErrorSchema,
+  buildSuccessResponseSchema,
+} from "../models/validation";
+import { Type } from "@sinclair/typebox";
+
+const UserProfileDataSchema = Type.Object({
+  name: Type.String(),
+  link_id: Type.String(),
+  profile_url: Type.Union([Type.String(), Type.Null()]),
+});
 
 export class UserRoutes {
   private readonly rateLimitOptions: RateLimitOptions = {
@@ -18,6 +29,16 @@ export class UserRoutes {
         instance.get(
           "/",
           {
+            schema: {
+              tags: ["User"],
+              summary: "Get current user profile",
+              security: [{ bearerAuth: [] }],
+              response: {
+                200: buildSuccessResponseSchema(UserProfileDataSchema, 200),
+                401: ApiErrorSchema,
+                404: ApiErrorSchema,
+              },
+            },
             preHandler: authenticate,
             config: {
               rateLimit: this.rateLimitOptions,

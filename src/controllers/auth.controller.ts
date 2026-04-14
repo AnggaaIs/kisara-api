@@ -8,16 +8,21 @@ import { AppError } from "../middlewares/error.middleware";
 import { AppResponse, StatusCode } from "../utils/app-response";
 import logger from "../utils/logger.util";
 import { GenerateUtil } from "../utils/generate.util";
-import jwt from "jsonwebtoken";
+import { AuthService } from "../services/auth.service";
+import { UserService } from "../services/user.service";
 
 export class AuthController {
   private readonly userRepository: UserRepository;
+  private readonly userService: UserService;
+  private readonly authService: AuthService;
   private readonly oauth2Client: OAuth2Client;
 
   constructor() {
     this.userRepository = new UserRepository(
       Database.getORM().em.getRepository(User)
     );
+    this.userService = new UserService(this.userRepository);
+    this.authService = new AuthService(this.userService);
     this.oauth2Client = new OAuth2Client(
       environment.google.clientId,
       environment.google.clientSecret,
@@ -63,26 +68,17 @@ export class AuthController {
         picture: string;
       };
 
-      const token = jwt.sign(
-        {
-          email: userInfo.email,
-          role: Role.USER,
-        },
-        environment.jwt.secret,
-        { expiresIn: "15m" }
-      );
-
-      const existingUser = await this.userRepository.findOne({
+      let user = await this.userRepository.findOne({
         email: userInfo.email,
       });
 
-      if (!existingUser) {
+      if (!user) {
         const linkId = await GenerateUtil.generateUniqueLinkID(
           Database.getORM().em,
           7
         );
 
-        await this.userRepository.create({
+        user = await this.userRepository.create({
           email: userInfo.email,
           name: userInfo.name,
           profile_url: userInfo.picture,
@@ -90,22 +86,66 @@ export class AuthController {
           role: Role.USER,
         });
       } else {
-        await this.userRepository.update(existingUser.id, {
+        const updatedUser = await this.userRepository.update(user.id, {
           name: userInfo.name,
           profile_url: userInfo.picture,
         });
+        if (updatedUser) {
+          user = updatedUser;
+        }
       }
+
+      const { accessToken, refreshToken } =
+        this.authService.generateTokens(user);
+
+      await this.userRepository.update(user.id, {
+        refresh_token: refreshToken,
+      });
 
       return AppResponse.sendSuccessResponse(
         request,
         reply,
         StatusCode.OK,
         "Google login successful",
-        { access_token: token }
+        { access_token: accessToken, refresh_token: refreshToken }
       );
     } catch (error) {
       logger.error({ err: error }, "Error during Google callback: ", error);
       throw new AppError("Failed to process Google callback", 500);
+    }
+  }
+
+  async refreshToken(request: FastifyRequest, reply: FastifyReply) {
+    try {
+      const { refresh_token } = request.body as { refresh_token: string };
+
+      if (!refresh_token) {
+        throw new AppError("Refresh token is required", 400);
+      }
+
+      const user = await this.authService.verifyRefreshToken(refresh_token);
+      const tokens = this.authService.generateTokens(user);
+
+      await this.userRepository.update(user.id, {
+        refresh_token: tokens.refreshToken,
+      });
+
+      return AppResponse.sendSuccessResponse(
+        request,
+        reply,
+        StatusCode.OK,
+        "Token refreshed successfully",
+        {
+          access_token: tokens.accessToken,
+          refresh_token: tokens.refreshToken,
+        }
+      );
+    } catch (error) {
+      logger.error({ err: error }, "Error refreshing token: ", error);
+      if (error instanceof AppError) {
+        throw error;
+      }
+      throw new AppError("Failed to refresh token", 401);
     }
   }
 }

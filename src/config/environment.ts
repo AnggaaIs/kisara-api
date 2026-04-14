@@ -1,16 +1,34 @@
 import dotenv from "dotenv";
 import path from "path";
+import fs from "fs";
 
 const envFile =
   process.env.NODE_ENV === "production"
     ? ".env.production"
     : ".env.development";
 
-dotenv.config({ path: path.resolve(__dirname, `../../../${envFile}`) });
+const candidateEnvPaths = [
+  path.resolve(process.cwd(), envFile),
+  path.resolve(__dirname, `../../${envFile}`),
+  path.resolve(__dirname, `../../../${envFile}`),
+];
+
+const resolvedEnvPath =
+  candidateEnvPaths.find((envPath) => fs.existsSync(envPath)) ||
+  candidateEnvPaths[0];
+
+dotenv.config({ path: resolvedEnvPath });
 
 export const environment = {
   nodeEnv: process.env.NODE_ENV || "development",
   port: parseInt(process.env.PORT || "3000", 10),
+  urls: {
+    api:
+      process.env.API_PUBLIC_URL ||
+      (process.env.NODE_ENV === "production"
+        ? "https://api.kisara.my.id"
+        : `http://localhost:${process.env.PORT || "3000"}`),
+  },
   db: {
     host: process.env.DB_HOST || "localhost",
     port: parseInt(process.env.DB_PORT || "5432", 10),
@@ -25,8 +43,12 @@ export const environment = {
   },
   jwt: {
     secret: process.env.JWT_SECRET || "holaassdasdasdasdasdasdasdasd",
-    expiresIn:
-      parseInt(process.env.JWT_EXPIRES_IN as string, 10) || 24 * 60 * 60 * 1000,
+    refreshSecret:
+      process.env.JWT_REFRESH_SECRET || "refreshholaassdasdasdasdasdasdasdasd",
+    expiresIn: parseInt(process.env.JWT_EXPIRES_IN as string, 10) || 15 * 60, // 15 minutes
+    refreshExpiresIn:
+      parseInt(process.env.JWT_REFRESH_EXPIRES_IN as string, 10) ||
+      7 * 24 * 60 * 60, // 7 days
   },
   cors: {
     origin: process.env.CORS_ORIGIN

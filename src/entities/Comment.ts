@@ -9,11 +9,13 @@ import {
   Cascade,
   BeforeCreate,
   Reference,
+  Index,
 } from "@mikro-orm/core";
 import { v4 } from "uuid";
 import { User } from "./User";
 import { ReplyComment } from "./ReplyComment";
 
+@Index({ properties: ["user_email", "created_at"] })
 @Entity()
 export class Comment {
   @PrimaryKey()

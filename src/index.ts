@@ -16,6 +16,7 @@ import { UserController } from "./controllers/user.controller";
 import { MessageController } from "./controllers/message.controller";
 import { logger } from "./utils/logger.util";
 import { HomeController } from "./controllers/home.controller";
+import { registerApiDocs } from "./config/api-docs";
 
 class FastifyApp {
   private app = Fastify({ loggerInstance: logger as FastifyBaseLogger });
@@ -27,6 +28,8 @@ class FastifyApp {
   constructor() {}
 
   private async setupPlugins() {
+    await registerApiDocs(this.app);
+
     await this.app.register(cors, {
       origin: environment.cors.origin,
       methods: environment.cors.methods,
@@ -77,12 +80,12 @@ class FastifyApp {
       this.setupHooks();
       this.setupRoutes();
 
-      logger.info("🚀 Starting server...");
+      logger.info("Starting server...");
       await this.app.listen({ port: environment.port, host: "0.0.0.0" });
 
-      logger.info(`✅ Server running at http://localhost:${environment.port}`);
+      logger.info(`Server running at http://localhost:${environment.port}`);
     } catch (error) {
-      logger.error({ err: error }, "❌ Error during server startup:", error);
+      logger.error({ err: error }, "Error during server startup:", error);
       process.exit(1);
     }
   }

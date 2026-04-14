@@ -1,7 +1,15 @@
-import { Entity, Property, ManyToOne, PrimaryKey, Ref } from "@mikro-orm/core";
+import {
+  Entity,
+  Property,
+  ManyToOne,
+  PrimaryKey,
+  Ref,
+  Index,
+} from "@mikro-orm/core";
 import { v4 } from "uuid";
 import { Comment } from "./Comment";
 
+@Index({ properties: ["parent", "created_at"] })
 @Entity()
 export class ReplyComment {
   @PrimaryKey()
