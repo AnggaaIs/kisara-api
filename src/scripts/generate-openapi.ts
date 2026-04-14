@@ -18,6 +18,8 @@ async function main() {
   server.setupHooks();
   server.setupRoutes();
 
+  await server.app.ready();
+
   const openapi = server.app.swagger();
   const outputDir = path.resolve(process.cwd(), "openapi");
   mkdirSync(outputDir, { recursive: true });
@@ -25,6 +27,8 @@ async function main() {
     path.join(outputDir, "openapi.json"),
     JSON.stringify(openapi, null, 2) + "\n"
   );
+
+  await server.app.close();
 
   console.log("OpenAPI generated at openapi/openapi.json");
 }
