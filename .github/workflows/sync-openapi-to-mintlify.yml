@@ -26,7 +26,21 @@ jobs:
 
       - name: Download OpenAPI spec
         run: |
-          curl -fsSL "${{ steps.source.outputs.url }}" -o openapi.json
+          URL="${{ steps.source.outputs.url }}"
+          if ! curl -fLsS \
+            --retry 3 \
+            --retry-all-errors \
+            --connect-timeout 20 \
+            --max-time 90 \
+            -A "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36" \
+            -H "Accept: application/json" \
+            "$URL" -o openapi.json; then
+            echo "Failed to download OpenAPI from $URL"
+            echo "Response headers for diagnostics:"
+            curl -IsS "$URL" || true
+            echo "Likely blocked by Cloudflare/WAF for GitHub Actions IP."
+            exit 1
+          fi
           node -e "JSON.parse(require('fs').readFileSync('openapi.json','utf8')); console.log('OpenAPI JSON valid')"
 
       - name: Clone Mintlify docs repository
