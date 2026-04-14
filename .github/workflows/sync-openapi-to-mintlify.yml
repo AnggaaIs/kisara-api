@@ -32,17 +32,11 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Determine source OpenAPI URL
-        id: source
+      - name: Generate OpenAPI spec locally
         run: |
           echo "Generating OpenAPI spec locally from source code..."
           pnpm generate:openapi
           node -e "JSON.parse(require('fs').readFileSync('openapi/openapi.json','utf8')); console.log('OpenAPI JSON valid')"
-        - name: Generate OpenAPI spec locally
-          run: |
-            echo "Generating OpenAPI spec locally from source code..."
-            pnpm generate:openapi
-            node -e "JSON.parse(require('fs').readFileSync('openapi/openapi.json','utf8')); console.log('OpenAPI JSON valid')"
 
       - name: Clone Mintlify docs repository
         env:
