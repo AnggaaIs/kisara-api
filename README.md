@@ -118,17 +118,14 @@ Workflow auto-sync OpenAPI ke repo docs Mintlify:
 Set repository variable dan secret berikut di GitHub repo ini:
 
 - `MINTLIFY_DOCS_REPO` = `owner/repo-docs-mintlify`
-- `OPENAPI_SOURCE_URL` = `https://api.kisara.my.id/openapi.json` (opsional)
-- `OPENAPI_SOURCE_URL_FALLBACK` = `https://openapi-origin.kisara.my.id/openapi.json` (opsional, direkomendasikan jika URL utama diproxy Cloudflare)
 - `MINTLIFY_DOCS_PAT` = GitHub PAT dengan permission `contents:write` ke repo docs
-- `CF_ACCOUNT_ID` = Cloudflare Account ID
-- `CF_ZONE_ID` = Cloudflare Zone ID untuk `kisara.my.id`
-- `CF_API_TOKEN` = Cloudflare API token dengan permission:
-  - Account > Account Filter Lists > Edit
-  - Zone > Zone WAF > Edit
-  - Zone > Zone Settings > Edit hanya kalau kamu memang ingin mengaktifkan opsi `disable_bot_fight_mode` di workflow
 
 Setelah itu, jalankan workflow `Sync OpenAPI to Mintlify Repo` via Actions.
+
+Catatan:
+
+- Workflow sekarang generate OpenAPI langsung dari source code di runner GitHub, jadi tidak perlu akses `api.kisara.my.id/openapi.json` lagi.
+- Karena itu Cloudflare tidak lagi mempengaruhi proses sync docs.
 
 ## 📂 Struktur Proyek
 

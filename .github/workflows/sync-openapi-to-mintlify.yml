@@ -15,61 +15,34 @@ jobs:
   sync-openapi:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
       - name: Determine source OpenAPI URL
         id: source
         run: |
-          URL="${{ vars.OPENAPI_SOURCE_URL }}"
-          if [ -z "$URL" ]; then
-            URL="https://api.kisara.my.id/openapi.json"
-          fi
-          FALLBACK_URL="${{ vars.OPENAPI_SOURCE_URL_FALLBACK }}"
-          echo "url=$URL" >> "$GITHUB_OUTPUT"
-          echo "fallback_url=$FALLBACK_URL" >> "$GITHUB_OUTPUT"
-
-      - name: Bypass Cloudflare for GitHub Action
-        uses: xiaotianxt/bypass-cloudflare-for-github-action@v2.1.0
-        with:
-          cf_account_id: ${{ secrets.CF_ACCOUNT_ID }}
-          cf_zone_id: ${{ secrets.CF_ZONE_ID }}
-          cf_api_token: ${{ secrets.CF_API_TOKEN }}
-
-      - name: Download OpenAPI spec
-        run: |
-          URL="${{ steps.source.outputs.url }}"
-          FALLBACK_URL="${{ steps.source.outputs.fallback_url }}"
-
-          download() {
-            local TARGET_URL="$1"
-            curl -fLsS \
-            --retry 3 \
-            --retry-all-errors \
-            --connect-timeout 20 \
-            --max-time 90 \
-            -A "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36" \
-            -H "Accept: application/json" \
-            "$TARGET_URL" -o openapi.json
-          }
-
-          if ! download "$URL"; then
-            echo "Failed to download OpenAPI from primary URL: $URL"
-            echo "Response headers for diagnostics:"
-            curl -IsS "$URL" || true
-
-            if [ -n "$FALLBACK_URL" ]; then
-              echo "Trying fallback URL: $FALLBACK_URL"
-              if ! download "$FALLBACK_URL"; then
-                echo "Failed to download OpenAPI from fallback URL: $FALLBACK_URL"
-                echo "Response headers for fallback diagnostics:"
-                curl -IsS "$FALLBACK_URL" || true
-                exit 1
-              fi
-            else
-              echo "Likely blocked by Cloudflare/WAF for GitHub Actions IP."
-              echo "Set OPENAPI_SOURCE_URL_FALLBACK to a DNS-only origin URL to bypass proxy challenge."
-              exit 1
-            fi
-          fi
-          node -e "JSON.parse(require('fs').readFileSync('openapi.json','utf8')); console.log('OpenAPI JSON valid')"
+          echo "Generating OpenAPI spec locally from source code..."
+          pnpm generate:openapi
+          node -e "JSON.parse(require('fs').readFileSync('openapi/openapi.json','utf8')); console.log('OpenAPI JSON valid')"
+        - name: Generate OpenAPI spec locally
+          run: |
+            echo "Generating OpenAPI spec locally from source code..."
+            pnpm generate:openapi
+            node -e "JSON.parse(require('fs').readFileSync('openapi/openapi.json','utf8')); console.log('OpenAPI JSON valid')"
 
       - name: Clone Mintlify docs repository
         env:
@@ -89,7 +62,7 @@ jobs:
       - name: Update OpenAPI file in docs repo
         run: |
           mkdir -p docs-repo/openapi
-          cp openapi.json docs-repo/openapi/openapi.json
+          cp openapi/openapi.json docs-repo/openapi/openapi.json
 
       - name: Commit and push if changed
         working-directory: docs-repo
