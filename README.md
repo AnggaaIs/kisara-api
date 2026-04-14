@@ -126,7 +126,7 @@ Set repository variable dan secret berikut di GitHub repo ini:
 - `CF_API_TOKEN` = Cloudflare API token dengan permission:
   - Account > Account Filter Lists > Edit
   - Zone > Zone WAF > Edit
-  - Zone > Zone Settings > Edit (karena workflow ini menonaktifkan Bot Fight Mode sementara)
+  - Zone > Zone Settings > Edit hanya kalau kamu memang ingin mengaktifkan opsi `disable_bot_fight_mode` di workflow
 
 Setelah itu, jalankan workflow `Sync OpenAPI to Mintlify Repo` via Actions.
 
