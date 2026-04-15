@@ -13,7 +13,6 @@ export interface ApiKeyView {
   last_four: string;
   created_at: Date;
   updated_at: Date;
-  last_used_at?: Date;
   revoked_at?: Date;
   expires_at?: Date;
 }
@@ -94,9 +93,6 @@ export class ApiKeyService {
       throw new AppError("Invalid API key", 401);
     }
 
-    storedApiKey.last_used_at = new Date();
-    await this.apiKeyRepository.save(storedApiKey);
-
     const user = await this.userService.findByEmail(storedApiKey.user.email);
 
     if (!user) {
@@ -114,7 +110,6 @@ export class ApiKeyService {
       last_four: apiKey.last_four,
       created_at: apiKey.created_at,
       updated_at: apiKey.updated_at,
-      last_used_at: apiKey.last_used_at,
       revoked_at: apiKey.revoked_at,
       expires_at: apiKey.expires_at,
     };

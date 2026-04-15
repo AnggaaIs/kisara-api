@@ -34,9 +34,6 @@ export class ApiKey {
   revoked_at?: Date;
 
   @Property({ nullable: true })
-  last_used_at?: Date;
-
-  @Property({ nullable: true })
   expires_at?: Date;
 
   @Property({ onCreate: () => new Date() })

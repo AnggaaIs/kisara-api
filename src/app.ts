@@ -25,6 +25,12 @@ export class FastifyApp {
   };
 
   constructor() {
+    // NOTE on trustProxy:
+    // Currently disabled because Cloudflare is in DNS-only mode (not a reverse proxy).
+    // req.ip already returns the real client IP (accurate).
+    //
+    // If you switch Cloudflare to proxy mode (orange cloud) or add a reverse proxy/load balancer,
+    // enable it: trustProxy: true (or 1, 'uniquelocal', etc based on your proxy setup)
     this.app = Fastify({ loggerInstance: logger as FastifyBaseLogger });
   }
 
@@ -41,6 +47,9 @@ export class FastifyApp {
       ...this.globalRateLimit,
       global: true,
       keyGenerator: (req) => req.ip,
+      // NOTE: DNS-only Cloudflare doesn't require trustProxy.
+      // If switching to Cloudflare proxy mode or behind a reverse proxy,
+      // enable trustProxy in Fastify constructor and this will correctly read X-Forwarded-For
     });
   }
 

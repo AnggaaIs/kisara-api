@@ -201,7 +201,17 @@ Catatan:
 - Workflow sekarang generate OpenAPI langsung dari source code di runner GitHub, jadi tidak perlu akses `api.kisara.my.id/openapi.json` lagi.
 - Karena itu Cloudflare tidak lagi mempengaruhi proses sync docs.
 
-## 📂 Struktur Proyek
+## ⚙️ Rate Limiting & IP Detection
+
+Rate limiting menggunakan **client IP address** dari request:
+
+- **Current setup:** Cloudflare DNS-only → `req.ip` adalah real client IP (akurat) ✓
+- **If switching to Cloudflare proxy mode or behind reverse proxy:**
+  - Pastikan `trustProxy` enable di Fastify config (`src/app.ts`)
+  - Fastify akan otomatis membaca `X-Forwarded-For` header untuk IP asli
+  - Rate limiting akan tetap akurat
+
+Dokumentasi detail ada di `src/app.ts` constructor dan `src/app.ts` setupPlugins().
 
 ```
 src/

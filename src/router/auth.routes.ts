@@ -29,7 +29,6 @@ const ApiKeyItemSchema = Type.Object({
   last_four: Type.String(),
   created_at: Type.String({ format: "date-time" }),
   updated_at: Type.String({ format: "date-time" }),
-  last_used_at: Type.Union([Type.String({ format: "date-time" }), Type.Null()]),
   revoked_at: Type.Union([Type.String({ format: "date-time" }), Type.Null()]),
   expires_at: Type.Union([Type.String({ format: "date-time" }), Type.Null()]),
 });
