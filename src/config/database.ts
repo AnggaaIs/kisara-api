@@ -8,6 +8,16 @@ class Database {
 
   private static readonly config: Options = mikroOrmConfig;
 
+  private static shouldRunMigrationsOnStartup(): boolean {
+    const flag = process.env.RUN_MIGRATIONS_ON_STARTUP;
+
+    if (!flag) {
+      return process.env.NODE_ENV !== "production";
+    }
+
+    return flag.toLowerCase() === "true";
+  }
+
   public static async initialize(): Promise<MikroORM> {
     if (!Database.instance) {
       try {
@@ -21,16 +31,21 @@ class Database {
         logger.info(`Executed migrations: ${executedMigrations.length}`);
         logger.info(`Pending migrations: ${pendingMigrations.length}`);
 
-        if (process.env.NODE_ENV !== "production") {
-          const diff = await Database.instance
-            .getSchemaGenerator()
-            .getUpdateSchemaSQL();
+        const shouldRunMigrations = Database.shouldRunMigrationsOnStartup();
 
-          if (diff.length > 0) {
-            logger.info("Schema changes detected, creating migration...");
-            await migrator.createMigration();
-            logger.info("New migration created ✅");
+        logger.info(
+          `Run migrations on startup: ${shouldRunMigrations ? "enabled" : "disabled"}`
+        );
+
+        if (!shouldRunMigrations) {
+          if (pendingMigrations.length > 0) {
+            logger.warn(
+              "Pending migrations detected but auto-run is disabled. Run migrations manually before serving traffic."
+            );
           }
+
+          logger.info("Database connection established successfully ✅");
+          return Database.instance;
         }
 
         if (pendingMigrations.length > 0) {

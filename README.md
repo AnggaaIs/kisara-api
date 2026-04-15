@@ -73,6 +73,10 @@ JWT_EXPIRES_IN=8640000
 CORS_ORIGIN=http://localhost:3000,https://kisara.my.id,https://www.kisara.my.id
 CORS_METHODS=GET,HEAD,PUT,PATCH,POST,DELETE
 CORS_ALLOWED_HEADERS=Content-Type,Authorization,X-API-Key,X-Requested-With
+
+# Migration Runtime Control
+# Default: true on non-production, false on production
+RUN_MIGRATIONS_ON_STARTUP=true
 ```
 
 ### 🚀 Jalankan API-nya
@@ -88,6 +92,50 @@ pnpm dev  # atau npm run dev / yarn dev
 ```sh
 pnpm build && pnpm start  # atau npm run build && npm start / yarn build && yarn start
 ```
+
+### 🗄️ Database Migration Workflow
+
+Migration sekarang tidak dibuat otomatis saat startup aplikasi.
+
+Gunakan command berikut secara eksplisit:
+
+```sh
+# Buat migration baru dari perubahan entity
+pnpm migrate:create
+
+# Lihat status migration
+pnpm migrate:status
+
+# Jalankan migration pending
+pnpm migrate:up
+
+# Rollback migration terakhir (jika diperlukan)
+pnpm migrate:down
+```
+
+Saran operasional:
+
+- Development lokal: boleh pakai `RUN_MIGRATIONS_ON_STARTUP=true`
+- Staging/Production: pakai `RUN_MIGRATIONS_ON_STARTUP=false` lalu jalankan `pnpm migrate:up` di pipeline deploy sebelum start app
+
+### ⚙️ PM2 Wizard (VPS)
+
+Untuk deploy cepat di VPS dengan proses interaktif (termasuk pertanyaan migration dan start/restart PM2 `kisara-api`):
+
+```sh
+pnpm run pm2:wizard
+```
+
+Wizard akan memandu:
+
+- input path project di VPS
+- pull latest source dari branch aktif
+- install dependency (opsional)
+- build project
+- cek status migration
+- jalankan migration (opsional)
+- start/restart PM2 dengan nama proses `kisara-api`
+- simpan proses PM2 agar auto-run setelah reboot
 
 ## 📚 API Docs Otomatis (Tanpa Swagger UI)
 
