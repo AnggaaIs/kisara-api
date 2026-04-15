@@ -99,24 +99,42 @@ Migration sekarang tidak dibuat otomatis saat startup aplikasi.
 
 Gunakan command berikut secara eksplisit:
 
+#### Local Development
+
 ```sh
 # Buat migration baru dari perubahan entity
 pnpm migrate:create
 
-# Lihat status migration
+# Lihat status migration (development environment)
 pnpm migrate:status
 
-# Jalankan migration pending
+# Jalankan migration pending (development environment)
 pnpm migrate:up
 
-# Rollback migration terakhir (jika diperlukan)
+# Rollback migration terakhir
 pnpm migrate:down
+```
+
+#### Production/CI Pipeline (Explicit NODE_ENV)
+
+**⚠️ IMPORTANT:** Always use `:prod` variants in production to ensure explicit `NODE_ENV=production` is set:
+
+```sh
+# Check migration status (explicit production env)
+pnpm run migrate:status:prod
+
+# Run pending migrations (explicit production env)
+pnpm run migrate:up:prod
+
+# Rollback last migration (explicit production env)
+pnpm run migrate:down:prod
 ```
 
 Saran operasional:
 
-- Development lokal: boleh pakai `RUN_MIGRATIONS_ON_STARTUP=true`
-- Staging/Production: pakai `RUN_MIGRATIONS_ON_STARTUP=false` lalu jalankan `pnpm migrate:up` di pipeline deploy sebelum start app
+- Development lokal: boleh pakai `RUN_MIGRATIONS_ON_STARTUP=true`, gunakan `pnpm migrate:*` commands
+- Staging/Production: pakai `RUN_MIGRATIONS_ON_STARTUP=false`, gunakan `pnpm migrate:*:prod` commands di pipeline deploy sebelum start app
+- **Rationale:** Production variants explicitly wrap migrations with `cross-env NODE_ENV=production` to prevent accidental wrong-environment execution
 
 ### ⚙️ PM2 Wizard (VPS)
 
