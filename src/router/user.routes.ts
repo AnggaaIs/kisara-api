@@ -32,7 +32,7 @@ export class UserRoutes {
             schema: {
               tags: ["User"],
               summary: "Get current user profile",
-              security: [{ bearerAuth: [] }],
+              security: [{ bearerAuth: [] }, { apiKeyAuth: [] }],
               response: {
                 200: buildSuccessResponseSchema(UserProfileDataSchema, 200),
                 401: ApiErrorSchema,

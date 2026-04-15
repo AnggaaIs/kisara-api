@@ -5,10 +5,13 @@ import {
   ApiValidationErrorSchema,
   AuthGoogleCallbackBody,
   AuthRefreshTokenBody,
+  ApiKeyCreateBody,
+  buildSuccessNoDataResponseSchema,
   buildSuccessResponseSchema,
 } from "../models/validation";
 import { RateLimitOptions } from "@fastify/rate-limit";
 import { Type } from "@sinclair/typebox";
+import { authenticateJwt } from "../middlewares/auth.middleware";
 
 const GoogleAuthUrlDataSchema = Type.Object({
   url: Type.String(),
@@ -17,6 +20,32 @@ const GoogleAuthUrlDataSchema = Type.Object({
 const AuthTokenDataSchema = Type.Object({
   access_token: Type.String(),
   refresh_token: Type.String(),
+});
+
+const ApiKeyItemSchema = Type.Object({
+  id: Type.String(),
+  name: Type.String(),
+  key_id: Type.String(),
+  last_four: Type.String(),
+  created_at: Type.String({ format: "date-time" }),
+  updated_at: Type.String({ format: "date-time" }),
+  last_used_at: Type.Union([Type.String({ format: "date-time" }), Type.Null()]),
+  revoked_at: Type.Union([Type.String({ format: "date-time" }), Type.Null()]),
+  expires_at: Type.Union([Type.String({ format: "date-time" }), Type.Null()]),
+});
+
+const ApiKeyCreatedDataSchema = Type.Object({
+  api_key: Type.String(),
+  key: Type.Object({
+    name: Type.String(),
+    key_id: Type.String(),
+    last_four: Type.String(),
+    key_type: Type.Union([Type.Literal("live"), Type.Literal("dev")]),
+  }),
+});
+
+const ApiKeyListDataSchema = Type.Object({
+  items: Type.Array(ApiKeyItemSchema),
 });
 
 export class AuthRoutes {
@@ -57,7 +86,7 @@ export class AuthRoutes {
               tags: ["Auth"],
               summary: "Google OAuth callback",
               description:
-                "Exchange authorization code with Google and issue API access/refresh tokens.",
+                "Exchange authorization code with Google and issue JWT access/refresh tokens for web session auth.",
               body: AuthGoogleCallbackBody,
               response: {
                 200: buildSuccessResponseSchema(AuthTokenDataSchema, 200),
@@ -92,6 +121,76 @@ export class AuthRoutes {
             },
           },
           this.authController.refreshToken.bind(this.authController)
+        );
+
+        instance.post<{ Body: { name: string } }>(
+          "/api-keys",
+          {
+            schema: {
+              tags: ["Auth"],
+              summary: "Generate API key",
+              description:
+                "Create a new API key for programmatic access. Requires JWT session auth.",
+              security: [{ bearerAuth: [] }],
+              body: ApiKeyCreateBody,
+              response: {
+                201: buildSuccessResponseSchema(ApiKeyCreatedDataSchema, 201),
+                401: ApiErrorSchema,
+              },
+            },
+            preHandler: authenticateJwt,
+            config: {
+              rateLimit: this.rateLimitOptions,
+            },
+          },
+          this.authController.generateApiKey.bind(this.authController)
+        );
+
+        instance.get(
+          "/api-keys",
+          {
+            schema: {
+              tags: ["Auth"],
+              summary: "List API keys",
+              description:
+                "Returns all API keys owned by the authenticated user.",
+              security: [{ bearerAuth: [] }],
+              response: {
+                200: buildSuccessResponseSchema(ApiKeyListDataSchema, 200),
+                401: ApiErrorSchema,
+              },
+            },
+            preHandler: authenticateJwt,
+            config: {
+              rateLimit: this.rateLimitOptions,
+            },
+          },
+          this.authController.listApiKeys.bind(this.authController)
+        );
+
+        instance.delete<{ Params: { api_key_id: string } }>(
+          "/api-keys/:api_key_id",
+          {
+            schema: {
+              tags: ["Auth"],
+              summary: "Revoke API key",
+              description: "Revoke an API key owned by the authenticated user.",
+              security: [{ bearerAuth: [] }],
+              params: Type.Object({
+                api_key_id: Type.String(),
+              }),
+              response: {
+                200: buildSuccessNoDataResponseSchema(200),
+                401: ApiErrorSchema,
+                404: ApiErrorSchema,
+              },
+            },
+            preHandler: authenticateJwt,
+            config: {
+              rateLimit: this.rateLimitOptions,
+            },
+          },
+          this.authController.revokeApiKey.bind(this.authController)
         );
 
         done();

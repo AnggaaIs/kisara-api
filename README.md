@@ -12,7 +12,7 @@ API ini bertujuan untuk memberikan layanan yang efisien dalam menangani data pen
 
 - ⚡ **Fastify** – Framework Node.js yang super cepat!
 - 🗃 **Mikro-ORM** – ORM ringan untuk PostgreSQL dengan fitur powerful
-- 🔐 **Autentikasi JWT** – Keamanan tinggi dengan token-based authentication
+- 🔐 **JWT + API Key** – JWT untuk session web, API key untuk akses programatik
 - 📊 **Logging dengan Pino** – Debugging lebih nyaman dengan format log yang jelas
 - 📌 **Validasi skema pakai TypeBox** – Data lebih rapi, lebih aman, dan lebih mudah dikelola
 - 🌍 **CORS & Rate Limiting** – Hindari abuse API dari luar
@@ -66,10 +66,13 @@ GOOGLE_REDIRECT_URI=http://localhost:3000/auth/google/callback
 JWT_SECRET=dummy_jwt_secret
 JWT_EXPIRES_IN=8640000
 
+# API Key
+# Tidak ada secret env khusus; API key digenerate per user dan disimpan hashed di database.
+
 # CORS
 CORS_ORIGIN=http://localhost:3000,https://kisara.my.id,https://www.kisara.my.id
 CORS_METHODS=GET,HEAD,PUT,PATCH,POST,DELETE
-CORS_ALLOWED_HEADERS=Content-Type,Authorization,X-Requested-With
+CORS_ALLOWED_HEADERS=Content-Type,Authorization,X-API-Key,X-Requested-With
 ```
 
 ### 🚀 Jalankan API-nya
@@ -92,6 +95,11 @@ Dokumentasi API sekarang digenerate otomatis dari schema route Fastify + TypeBox
 
 - OpenAPI JSON: `http://localhost:3000/openapi.json`
 - OpenAPI YAML: `http://localhost:3000/openapi.yaml`
+
+Autentikasi yang dipakai:
+
+- JWT via `Authorization: Bearer <token>` untuk sesi web dan endpoint manajemen akun
+- API key via `X-API-Key: ksr_dev_<id>.<secret>` atau `ksr_live_<id>.<secret>` untuk akses API
 
 Env opsional:
 

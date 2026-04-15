@@ -11,6 +11,11 @@
         "type": "http",
         "scheme": "bearer",
         "bearerFormat": "JWT"
+      },
+      "apiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-API-Key"
       }
     },
     "schemas": {}
@@ -168,7 +173,7 @@
         "tags": [
           "Auth"
         ],
-        "description": "Exchange authorization code with Google and issue API access/refresh tokens.",
+        "description": "Exchange authorization code with Google and issue JWT access/refresh tokens for web session auth.",
         "requestBody": {
           "required": true,
           "content": {
@@ -583,6 +588,578 @@
         }
       }
     },
+    "/auth/api-keys": {
+      "post": {
+        "summary": "Generate API key",
+        "tags": [
+          "Auth"
+        ],
+        "description": "Create a new API key for programmatic access. Requires JWT session auth.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "minLength": 1,
+                    "maxLength": 80,
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "name"
+                ]
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status_code": {
+                      "type": "number",
+                      "enum": [
+                        201
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "api_key": {
+                          "type": "string"
+                        },
+                        "key": {
+                          "type": "object",
+                          "properties": {
+                            "name": {
+                              "type": "string"
+                            },
+                            "key_id": {
+                              "type": "string"
+                            },
+                            "last_four": {
+                              "type": "string"
+                            },
+                            "key_type": {
+                              "anyOf": [
+                                {
+                                  "type": "string",
+                                  "enum": [
+                                    "live"
+                                  ]
+                                },
+                                {
+                                  "type": "string",
+                                  "enum": [
+                                    "dev"
+                                  ]
+                                }
+                              ]
+                            }
+                          },
+                          "required": [
+                            "name",
+                            "key_id",
+                            "last_four",
+                            "key_type"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "api_key",
+                        "key"
+                      ]
+                    },
+                    "metadata": {
+                      "type": "object",
+                      "properties": {
+                        "method": {
+                          "type": "string"
+                        },
+                        "url": {
+                          "type": "string"
+                        },
+                        "execution_time_ms": {
+                          "type": "number"
+                        },
+                        "ip": {
+                          "type": "string"
+                        },
+                        "timestamp": {
+                          "format": "date-time",
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "method",
+                        "url",
+                        "execution_time_ms",
+                        "ip",
+                        "timestamp"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "status_code",
+                    "message",
+                    "data",
+                    "metadata"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status_code": {
+                      "type": "number"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "metadata": {
+                      "type": "object",
+                      "properties": {
+                        "method": {
+                          "type": "string"
+                        },
+                        "url": {
+                          "type": "string"
+                        },
+                        "execution_time_ms": {
+                          "type": "number"
+                        },
+                        "ip": {
+                          "type": "string"
+                        },
+                        "timestamp": {
+                          "format": "date-time",
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "method",
+                        "url",
+                        "execution_time_ms",
+                        "ip",
+                        "timestamp"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "status_code",
+                    "message",
+                    "metadata"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "List API keys",
+        "tags": [
+          "Auth"
+        ],
+        "description": "Returns all API keys owned by the authenticated user.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status_code": {
+                      "type": "number",
+                      "enum": [
+                        200
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "items": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string"
+                              },
+                              "name": {
+                                "type": "string"
+                              },
+                              "key_id": {
+                                "type": "string"
+                              },
+                              "last_four": {
+                                "type": "string"
+                              },
+                              "created_at": {
+                                "format": "date-time",
+                                "type": "string"
+                              },
+                              "updated_at": {
+                                "format": "date-time",
+                                "type": "string"
+                              },
+                              "last_used_at": {
+                                "anyOf": [
+                                  {
+                                    "format": "date-time",
+                                    "type": "string"
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              },
+                              "revoked_at": {
+                                "anyOf": [
+                                  {
+                                    "format": "date-time",
+                                    "type": "string"
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              },
+                              "expires_at": {
+                                "anyOf": [
+                                  {
+                                    "format": "date-time",
+                                    "type": "string"
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "name",
+                              "key_id",
+                              "last_four",
+                              "created_at",
+                              "updated_at",
+                              "last_used_at",
+                              "revoked_at",
+                              "expires_at"
+                            ]
+                          }
+                        }
+                      },
+                      "required": [
+                        "items"
+                      ]
+                    },
+                    "metadata": {
+                      "type": "object",
+                      "properties": {
+                        "method": {
+                          "type": "string"
+                        },
+                        "url": {
+                          "type": "string"
+                        },
+                        "execution_time_ms": {
+                          "type": "number"
+                        },
+                        "ip": {
+                          "type": "string"
+                        },
+                        "timestamp": {
+                          "format": "date-time",
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "method",
+                        "url",
+                        "execution_time_ms",
+                        "ip",
+                        "timestamp"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "status_code",
+                    "message",
+                    "data",
+                    "metadata"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status_code": {
+                      "type": "number"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "metadata": {
+                      "type": "object",
+                      "properties": {
+                        "method": {
+                          "type": "string"
+                        },
+                        "url": {
+                          "type": "string"
+                        },
+                        "execution_time_ms": {
+                          "type": "number"
+                        },
+                        "ip": {
+                          "type": "string"
+                        },
+                        "timestamp": {
+                          "format": "date-time",
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "method",
+                        "url",
+                        "execution_time_ms",
+                        "ip",
+                        "timestamp"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "status_code",
+                    "message",
+                    "metadata"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/api-keys/{api_key_id}": {
+      "delete": {
+        "summary": "Revoke API key",
+        "tags": [
+          "Auth"
+        ],
+        "description": "Revoke an API key owned by the authenticated user.",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "path",
+            "name": "api_key_id",
+            "required": true
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status_code": {
+                      "type": "number",
+                      "enum": [
+                        200
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "metadata": {
+                      "type": "object",
+                      "properties": {
+                        "method": {
+                          "type": "string"
+                        },
+                        "url": {
+                          "type": "string"
+                        },
+                        "execution_time_ms": {
+                          "type": "number"
+                        },
+                        "ip": {
+                          "type": "string"
+                        },
+                        "timestamp": {
+                          "format": "date-time",
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "method",
+                        "url",
+                        "execution_time_ms",
+                        "ip",
+                        "timestamp"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "status_code",
+                    "message",
+                    "metadata"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status_code": {
+                      "type": "number"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "metadata": {
+                      "type": "object",
+                      "properties": {
+                        "method": {
+                          "type": "string"
+                        },
+                        "url": {
+                          "type": "string"
+                        },
+                        "execution_time_ms": {
+                          "type": "number"
+                        },
+                        "ip": {
+                          "type": "string"
+                        },
+                        "timestamp": {
+                          "format": "date-time",
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "method",
+                        "url",
+                        "execution_time_ms",
+                        "ip",
+                        "timestamp"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "status_code",
+                    "message",
+                    "metadata"
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status_code": {
+                      "type": "number"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "metadata": {
+                      "type": "object",
+                      "properties": {
+                        "method": {
+                          "type": "string"
+                        },
+                        "url": {
+                          "type": "string"
+                        },
+                        "execution_time_ms": {
+                          "type": "number"
+                        },
+                        "ip": {
+                          "type": "string"
+                        },
+                        "timestamp": {
+                          "format": "date-time",
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "method",
+                        "url",
+                        "execution_time_ms",
+                        "ip",
+                        "timestamp"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "status_code",
+                    "message",
+                    "metadata"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/user/": {
       "get": {
         "summary": "Get current user profile",
@@ -592,6 +1169,9 @@
         "security": [
           {
             "bearerAuth": []
+          },
+          {
+            "apiKeyAuth": []
           }
         ],
         "responses": {
@@ -1352,6 +1932,9 @@
         "security": [
           {
             "bearerAuth": []
+          },
+          {
+            "apiKeyAuth": []
           }
         ],
         "responses": {
@@ -1839,6 +2422,9 @@
         "security": [
           {
             "bearerAuth": []
+          },
+          {
+            "apiKeyAuth": []
           }
         ],
         "responses": {
@@ -2117,6 +2703,9 @@
         "security": [
           {
             "bearerAuth": []
+          },
+          {
+            "apiKeyAuth": []
           }
         ],
         "responses": {
@@ -2310,6 +2899,9 @@
         "security": [
           {
             "bearerAuth": []
+          },
+          {
+            "apiKeyAuth": []
           }
         ],
         "responses": {
@@ -2646,7 +3238,7 @@
   "tags": [
     {
       "name": "Auth",
-      "description": "Authentication and token flows"
+      "description": "JWT session auth, refresh tokens, and user-owned API keys"
     },
     {
       "name": "User",

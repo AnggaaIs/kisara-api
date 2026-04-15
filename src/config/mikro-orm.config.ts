@@ -3,6 +3,7 @@ import { PostgreSqlDriver } from "@mikro-orm/postgresql";
 import { User } from "../entities/User";
 import { Comment } from "../entities/Comment";
 import { ReplyComment } from "../entities/ReplyComment";
+import { ApiKey } from "../entities/ApiKey";
 import { environment } from "./environment";
 import { Migrator } from "@mikro-orm/migrations";
 import path from "path";
@@ -27,7 +28,7 @@ const config: Options = {
     min: 2,
     max: 20,
   },
-  entities: [User, Comment, ReplyComment],
+  entities: [User, Comment, ReplyComment, ApiKey],
   debug: environment.nodeEnv === "development",
   allowGlobalContext: true,
   migrations: {

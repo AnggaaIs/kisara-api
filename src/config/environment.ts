@@ -61,7 +61,7 @@ export const environment = {
       ? process.env.CORS_ALLOWED_HEADERS.split(",").map((header) =>
           header.trim()
         )
-      : ["Content-Type", "Authorization", "X-Requested-With"],
+      : ["Content-Type", "Authorization", "X-API-Key", "X-Requested-With"],
   },
 
   firebase: {

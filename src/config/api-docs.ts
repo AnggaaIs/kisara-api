@@ -24,7 +24,11 @@ export const registerApiDocs = async (app: FastifyInstance): Promise<void> => {
         },
       ],
       tags: [
-        { name: "Auth", description: "Authentication and token flows" },
+        {
+          name: "Auth",
+          description:
+            "JWT session auth, refresh tokens, and user-owned API keys",
+        },
         { name: "User", description: "Current user profile endpoints" },
         { name: "Message", description: "Message and reply management" },
         { name: "Home", description: "Health and stats endpoints" },
@@ -35,6 +39,11 @@ export const registerApiDocs = async (app: FastifyInstance): Promise<void> => {
             type: "http",
             scheme: "bearer",
             bearerFormat: "JWT",
+          },
+          apiKeyAuth: {
+            type: "apiKey",
+            in: "header",
+            name: "X-API-Key",
           },
         },
       },

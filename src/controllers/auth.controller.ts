@@ -10,11 +10,16 @@ import logger from "../utils/logger.util";
 import { GenerateUtil } from "../utils/generate.util";
 import { AuthService } from "../services/auth.service";
 import { UserService } from "../services/user.service";
+import { ApiKeyRepository } from "../repositories/ApiKeyRepository";
+import { ApiKey } from "../entities/ApiKey";
+import { ApiKeyService } from "../services/api-key.service";
 
 export class AuthController {
   private readonly userRepository: UserRepository;
   private readonly userService: UserService;
   private readonly authService: AuthService;
+  private readonly apiKeyRepository: ApiKeyRepository;
+  private readonly apiKeyService: ApiKeyService;
   private readonly oauth2Client: OAuth2Client;
 
   constructor() {
@@ -23,6 +28,13 @@ export class AuthController {
     );
     this.userService = new UserService(this.userRepository);
     this.authService = new AuthService(this.userService);
+    this.apiKeyRepository = new ApiKeyRepository(
+      Database.getORM().em.getRepository(ApiKey)
+    );
+    this.apiKeyService = new ApiKeyService(
+      this.userService,
+      this.apiKeyRepository
+    );
     this.oauth2Client = new OAuth2Client(
       environment.google.clientId,
       environment.google.clientSecret,
@@ -146,6 +158,111 @@ export class AuthController {
         throw error;
       }
       throw new AppError("Failed to refresh token", 401);
+    }
+  }
+
+  async generateApiKey(request: FastifyRequest, reply: FastifyReply) {
+    try {
+      const { name } = request.body as { name: string };
+      const email = request.user?.email;
+
+      if (!email) {
+        throw new AppError("Unauthorized", 401);
+      }
+
+      const user = await this.userRepository.findByEmail(email);
+
+      if (!user) {
+        throw new AppError("User not found", 404);
+      }
+
+      const apiKeyMaterial = await this.apiKeyService.createForUser(user, name);
+
+      return AppResponse.sendSuccessResponse(
+        request,
+        reply,
+        StatusCode.CREATED,
+        "API key generated successfully",
+        {
+          api_key: apiKeyMaterial.apiKey,
+          key: {
+            name,
+            key_id: apiKeyMaterial.keyId,
+            last_four: apiKeyMaterial.lastFour,
+            key_type: apiKeyMaterial.keyType,
+          },
+        }
+      );
+    } catch (error) {
+      logger.error({ err: error }, "Error generating API key: ", error);
+      if (error instanceof AppError) {
+        throw error;
+      }
+      throw new AppError("Failed to generate API key", 500);
+    }
+  }
+
+  async listApiKeys(request: FastifyRequest, reply: FastifyReply) {
+    try {
+      const email = request.user?.email;
+
+      if (!email) {
+        throw new AppError("Unauthorized", 401);
+      }
+
+      const user = await this.userRepository.findByEmail(email);
+
+      if (!user) {
+        throw new AppError("User not found", 404);
+      }
+
+      const keys = await this.apiKeyService.listForUser(user.id);
+
+      return AppResponse.sendSuccessResponse(
+        request,
+        reply,
+        StatusCode.OK,
+        "API keys retrieved successfully",
+        { items: keys }
+      );
+    } catch (error) {
+      logger.error({ err: error }, "Error listing API keys: ", error);
+      if (error instanceof AppError) {
+        throw error;
+      }
+      throw new AppError("Failed to list API keys", 500);
+    }
+  }
+
+  async revokeApiKey(request: FastifyRequest, reply: FastifyReply) {
+    try {
+      const email = request.user?.email;
+      const { api_key_id } = request.params as { api_key_id: string };
+
+      if (!email) {
+        throw new AppError("Unauthorized", 401);
+      }
+
+      const user = await this.userRepository.findByEmail(email);
+
+      if (!user) {
+        throw new AppError("User not found", 404);
+      }
+
+      await this.apiKeyService.revokeForUser(user.id, api_key_id);
+
+      return AppResponse.sendSuccessNoDataResponse(
+        request,
+        reply,
+        StatusCode.OK,
+        "API key revoked successfully"
+      );
+    } catch (error) {
+      logger.error({ err: error }, "Error revoking API key: ", error);
+      if (error instanceof AppError) {
+        throw error;
+      }
+      throw new AppError("Failed to revoke API key", 500);
     }
   }
 }

@@ -8,6 +8,7 @@ import {
   Index,
 } from "@mikro-orm/core";
 import { Comment } from "./Comment";
+import { ApiKey } from "./ApiKey";
 import { v4 as uuidv4 } from "uuid";
 
 export enum Role {
@@ -63,6 +64,9 @@ export class User {
 
   @OneToMany(() => Comment, (comment) => comment.user)
   comments = new Collection<Comment>(this);
+
+  @OneToMany(() => ApiKey, (apiKey) => apiKey.user)
+  api_keys = new Collection<ApiKey>(this);
 
   @Property({ onCreate: () => new Date() })
   created_at: Date = new Date();
