@@ -1,0 +1,74 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "name": "Kisara API Documentation",
+  "logo": {
+    "dark": "/logo/dark.svg",
+    "light": "/logo/light.svg"
+  },
+  "appearance": {
+    "default": "system"
+  },
+  "fonts": {
+    "family": "Manrope",
+    "heading": {
+      "family": "Manrope",
+      "weight": 700
+    },
+    "body": {
+      "family": "Manrope",
+      "weight": 500
+    }
+  },
+  "icons": {
+    "library": "lucide"
+  },
+  "theme": "mint",
+  "background": {
+    "decoration": "gradient"
+  },
+  "colors": {
+    "primary": "#0b5fae",
+    "light": "#38bdf8",
+    "dark": "#0a3d78"
+  },
+  "styling": {
+    "eyebrows": "breadcrumbs",
+    "codeblocks": "system"
+  },
+  "navigation": {
+    "groups": [
+      {
+        "group": "Getting Started",
+        "icon": "rocket",
+        "root": "index",
+        "pages": [
+          "index",
+          "api/overview"
+        ]
+      },
+      {
+        "group": "API Reference",
+        "icon": "square-terminal",
+        "openapi": "openapi/openapi.json"
+      }
+    ]
+  },
+  "api": {
+    "playground": {
+      "display": "interactive"
+    },
+    "examples": {
+      "languages": [
+        "curl",
+        "javascript",
+        "python"
+      ],
+      "defaults": "required",
+      "prefill": true,
+      "autogenerate": true
+    },
+    "spec": {
+      "download": true
+    }
+  }
+}

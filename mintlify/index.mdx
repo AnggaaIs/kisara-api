@@ -1,0 +1,64 @@
+---
+title: "Kisara API"
+description: "Official docs for the Kisara API"
+mode: "custom"
+---
+
+<div className="px-5 pt-10 pb-6 lg:pt-16 lg:pb-10 max-w-4xl mx-auto text-center">
+	<p className="text-sm font-semibold tracking-wide uppercase text-teal-600 dark:text-teal-400">
+		Kisara Platform
+	</p>
+	<h1 className="mt-3 text-4xl lg:text-5xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">
+		Kisara API Docs
+	</h1>
+	<p className="mt-5 text-base lg:text-lg text-slate-600 dark:text-slate-300 max-w-2xl mx-auto">
+		Everything you need for a quick integration: API key auth basics, response patterns, and an interactive API playground.
+	</p>
+</div>
+
+<div className="max-w-5xl mx-auto px-5 pb-8">
+	<Columns cols={2}>
+		<Card title="Start with API Overview" icon="book-open" href="/api/overview" cta="Open guide" arrow>
+			Learn the API conventions, response structure, and recommended integration flow.
+		</Card>
+		<Card title="Explore API Reference" icon="terminal" href="/api-reference" cta="Try endpoints" arrow>
+			Check endpoint details, request-response schemas, and run calls in the playground.
+		</Card>
+	</Columns>
+</div>
+
+<div className="max-w-5xl mx-auto px-5 pb-2">
+	<Info>
+		Production base URL: https://api.kisara.my.id
+	</Info>
+</div>
+
+<div className="max-w-5xl mx-auto px-5 pb-4">
+	<Card title="Environment Endpoint" icon="server" horizontal>
+		OpenAPI JSON: https://api.kisara.my.id/openapi.json<br />
+		OpenAPI YAML: https://api.kisara.my.id/openapi.yaml
+	</Card>
+</div>
+
+<div className="max-w-5xl mx-auto px-5 pb-12">
+	<h2>Integration Flow</h2>
+	<Steps>
+		<Step title="Create API key from your account">
+			Sign in via web session, then generate API key from API key management endpoint or dashboard.
+		</Step>
+		<Step title="Send requests with API key header">
+			For protected endpoints, include `X-API-Key: <your_api_key>`.
+		</Step>
+		<Step title="Validate the response">
+			Use `status_code`, `message`, `data`, and `metadata` to verify and debug responses.
+		</Step>
+	</Steps>
+
+	<Info>
+		JWT bearer token is still used for internal web session flows (login/refresh and API key management), not as primary auth for API consumers.
+	</Info>
+
+	<Tip>
+		Recommended reading order: API Overview first, then API Reference.
+	</Tip>
+</div>

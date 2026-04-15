@@ -21,7 +21,7 @@ async function main() {
   await server.app.ready();
 
   const openapi = server.app.swagger();
-  const outputDir = path.resolve(process.cwd(), "openapi");
+  const outputDir = path.resolve(process.cwd(), "mintlify", "openapi");
   mkdirSync(outputDir, { recursive: true });
   writeFileSync(
     path.join(outputDir, "openapi.json"),
@@ -30,7 +30,7 @@ async function main() {
 
   await server.app.close();
 
-  console.log("OpenAPI generated at openapi/openapi.json");
+  console.log("OpenAPI generated at mintlify/openapi/openapi.json");
 }
 
 main().catch((error) => {

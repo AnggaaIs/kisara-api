@@ -1,0 +1,14 @@
+#!/usr/bin/env sh
+set -e
+
+echo "Running OpenAPI generation before push..."
+pnpm generate:openapi
+
+if [ -n "$(git status --porcelain -- mintlify/openapi/openapi.json)" ]; then
+  git add mintlify/openapi/openapi.json
+  echo "OpenAPI spec changed and has been staged."
+  echo "Please commit the updated mintlify/openapi/openapi.json before pushing."
+  exit 1
+fi
+
+echo "OpenAPI is up-to-date. Proceeding with push."

@@ -113,11 +113,11 @@ Pendekatan ini cocok untuk project besar karena:
 
 ## 🧩 Mintlify Integration (Template + Auto Sync)
 
-Template Mintlify sudah disiapkan di folder `mintlify-template/`:
+Template Mintlify sudah disiapkan di folder `mintlify/`:
 
-- `mintlify-template/docs.json`
-- `mintlify-template/index.mdx`
-- `mintlify-template/api/overview.mdx`
+- `mintlify/docs.json`
+- `mintlify/index.mdx`
+- `mintlify/api/overview.mdx`
 
 Workflow auto-sync OpenAPI ke repo docs Mintlify:
 
