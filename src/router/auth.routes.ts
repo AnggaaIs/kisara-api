@@ -63,10 +63,10 @@ export class AuthRoutes {
           "/google/url",
           {
             schema: {
-              tags: ["Auth"],
+              tags: ["Auth (Internal Web Session)"],
               summary: "Generate Google OAuth URL",
               description:
-                "Returns Google OAuth consent URL that will be used by frontend login flow.",
+                "Internal frontend login flow: returns Google OAuth consent URL.",
               response: {
                 200: buildSuccessResponseSchema(GoogleAuthUrlDataSchema, 200),
                 500: ApiErrorSchema,
@@ -83,10 +83,10 @@ export class AuthRoutes {
           "/google/callback",
           {
             schema: {
-              tags: ["Auth"],
+              tags: ["Auth (Internal Web Session)"],
               summary: "Google OAuth callback",
               description:
-                "Exchange authorization code with Google and issue JWT access/refresh tokens for web session auth.",
+                "Internal frontend login flow: exchange authorization code and issue JWT web-session tokens.",
               body: AuthGoogleCallbackBody,
               response: {
                 200: buildSuccessResponseSchema(AuthTokenDataSchema, 200),
@@ -105,10 +105,10 @@ export class AuthRoutes {
           "/refresh",
           {
             schema: {
-              tags: ["Auth"],
+              tags: ["Auth (Internal Web Session)"],
               summary: "Refresh JWT token",
               description:
-                "Validate refresh token and return newly generated access/refresh token pair.",
+                "Internal web-session flow: validate refresh token and issue new JWT pair.",
               body: AuthRefreshTokenBody,
               response: {
                 200: buildSuccessResponseSchema(AuthTokenDataSchema, 200),
@@ -127,10 +127,10 @@ export class AuthRoutes {
           "/api-keys",
           {
             schema: {
-              tags: ["Auth"],
+              tags: ["API Keys"],
               summary: "Generate API key",
               description:
-                "Create a new API key for programmatic access. Requires JWT session auth.",
+                "Create a new API key for consumer API access. Requires authenticated web session.",
               security: [{ bearerAuth: [] }],
               body: ApiKeyCreateBody,
               response: {
@@ -150,7 +150,7 @@ export class AuthRoutes {
           "/api-keys",
           {
             schema: {
-              tags: ["Auth"],
+              tags: ["API Keys"],
               summary: "List API keys",
               description:
                 "Returns all API keys owned by the authenticated user.",
@@ -172,7 +172,7 @@ export class AuthRoutes {
           "/api-keys/:api_key_id",
           {
             schema: {
-              tags: ["Auth"],
+              tags: ["API Keys"],
               summary: "Revoke API key",
               description: "Revoke an API key owned by the authenticated user.",
               security: [{ bearerAuth: [] }],

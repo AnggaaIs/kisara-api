@@ -98,8 +98,8 @@ Dokumentasi API sekarang digenerate otomatis dari schema route Fastify + TypeBox
 
 Autentikasi yang dipakai:
 
-- JWT via `Authorization: Bearer <token>` untuk sesi web dan endpoint manajemen akun
-- API key via `X-API-Key: ksr_dev_<id>.<secret>` atau `ksr_live_<id>.<secret>` untuk akses API
+- JWT via `Authorization: Bearer <token>` untuk sesi web internal (login/refresh dan manajemen API key)
+- API key via `X-API-Key: ksr_dev_<id>.<secret>` atau `ksr_live_<id>.<secret>` untuk konsumsi endpoint API oleh user konsumer
 
 Env opsional:
 

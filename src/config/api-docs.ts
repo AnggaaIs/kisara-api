@@ -25,9 +25,14 @@ export const registerApiDocs = async (app: FastifyInstance): Promise<void> => {
       ],
       tags: [
         {
-          name: "Auth",
+          name: "Auth (Internal Web Session)",
           description:
-            "JWT session auth, refresh tokens, and user-owned API keys",
+            "Internal web session flows (OAuth callback and JWT refresh). Not intended for API consumers.",
+        },
+        {
+          name: "API Keys",
+          description:
+            "API key management for authenticated users. Use generated keys for programmatic API access.",
         },
         { name: "User", description: "Current user profile endpoints" },
         { name: "Message", description: "Message and reply management" },
@@ -39,11 +44,15 @@ export const registerApiDocs = async (app: FastifyInstance): Promise<void> => {
             type: "http",
             scheme: "bearer",
             bearerFormat: "JWT",
+            description:
+              "Internal web-session JWT, used only for session-based account actions and API key management.",
           },
           apiKeyAuth: {
             type: "apiKey",
             in: "header",
             name: "X-API-Key",
+            description:
+              "Consumer-facing API authentication. Use this for protected User/Message endpoints.",
           },
         },
       },

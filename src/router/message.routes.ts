@@ -133,7 +133,7 @@ export class MessageRoutes {
               tags: ["Message"],
               summary: "Delete message",
               params: LinkMessageParams,
-              security: [{ bearerAuth: [] }, { apiKeyAuth: [] }],
+              security: [{ apiKeyAuth: [] }],
               response: {
                 200: buildSuccessNoDataResponseSchema(200),
                 401: ApiErrorSchema,
@@ -179,7 +179,7 @@ export class MessageRoutes {
               summary: "Reply to message",
               params: LinkMessageParams,
               body: MessageBodyPost,
-              security: [{ bearerAuth: [] }, { apiKeyAuth: [] }],
+              security: [{ apiKeyAuth: [] }],
               response: {
                 201: buildSuccessResponseSchema(ReplyCreatedDataSchema, 201),
                 400: ApiValidationErrorSchema,
@@ -204,7 +204,7 @@ export class MessageRoutes {
               tags: ["Message"],
               summary: "Delete reply",
               params: LinkMessageReplyParams,
-              security: [{ bearerAuth: [] }, { apiKeyAuth: [] }],
+              security: [{ apiKeyAuth: [] }],
               response: {
                 200: buildSuccessResponseSchema(Type.Null(), 200),
                 401: ApiErrorSchema,
@@ -226,7 +226,7 @@ export class MessageRoutes {
               tags: ["Message"],
               summary: "Toggle like by creator",
               params: LinkMessageParams,
-              security: [{ bearerAuth: [] }, { apiKeyAuth: [] }],
+              security: [{ apiKeyAuth: [] }],
               response: {
                 200: buildSuccessResponseSchema(LikeDataSchema, 200),
                 401: ApiErrorSchema,

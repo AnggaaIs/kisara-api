@@ -10,12 +10,14 @@
       "bearerAuth": {
         "type": "http",
         "scheme": "bearer",
-        "bearerFormat": "JWT"
+        "bearerFormat": "JWT",
+        "description": "Internal web-session JWT, used only for session-based account actions and API key management."
       },
       "apiKeyAuth": {
         "type": "apiKey",
         "in": "header",
-        "name": "X-API-Key"
+        "name": "X-API-Key",
+        "description": "Consumer-facing API authentication. Use this for protected User/Message endpoints."
       }
     },
     "schemas": {}
@@ -43,9 +45,9 @@
       "get": {
         "summary": "Generate Google OAuth URL",
         "tags": [
-          "Auth"
+          "Auth (Internal Web Session)"
         ],
-        "description": "Returns Google OAuth consent URL that will be used by frontend login flow.",
+        "description": "Internal frontend login flow: returns Google OAuth consent URL.",
         "responses": {
           "200": {
             "description": "Default Response",
@@ -171,9 +173,9 @@
       "post": {
         "summary": "Google OAuth callback",
         "tags": [
-          "Auth"
+          "Auth (Internal Web Session)"
         ],
-        "description": "Exchange authorization code with Google and issue JWT access/refresh tokens for web session auth.",
+        "description": "Internal frontend login flow: exchange authorization code and issue JWT web-session tokens.",
         "requestBody": {
           "required": true,
           "content": {
@@ -385,9 +387,9 @@
       "post": {
         "summary": "Refresh JWT token",
         "tags": [
-          "Auth"
+          "Auth (Internal Web Session)"
         ],
-        "description": "Validate refresh token and return newly generated access/refresh token pair.",
+        "description": "Internal web-session flow: validate refresh token and issue new JWT pair.",
         "requestBody": {
           "required": true,
           "content": {
@@ -592,9 +594,9 @@
       "post": {
         "summary": "Generate API key",
         "tags": [
-          "Auth"
+          "API Keys"
         ],
-        "description": "Create a new API key for programmatic access. Requires JWT session auth.",
+        "description": "Create a new API key for consumer API access. Requires authenticated web session.",
         "requestBody": {
           "required": true,
           "content": {
@@ -780,7 +782,7 @@
       "get": {
         "summary": "List API keys",
         "tags": [
-          "Auth"
+          "API Keys"
         ],
         "description": "Returns all API keys owned by the authenticated user.",
         "security": [
@@ -982,7 +984,7 @@
       "delete": {
         "summary": "Revoke API key",
         "tags": [
-          "Auth"
+          "API Keys"
         ],
         "description": "Revoke an API key owned by the authenticated user.",
         "parameters": [
@@ -1167,9 +1169,6 @@
           "User"
         ],
         "security": [
-          {
-            "bearerAuth": []
-          },
           {
             "apiKeyAuth": []
           }
@@ -1931,9 +1930,6 @@
         ],
         "security": [
           {
-            "bearerAuth": []
-          },
-          {
             "apiKeyAuth": []
           }
         ],
@@ -2421,9 +2417,6 @@
         ],
         "security": [
           {
-            "bearerAuth": []
-          },
-          {
             "apiKeyAuth": []
           }
         ],
@@ -2702,9 +2695,6 @@
         ],
         "security": [
           {
-            "bearerAuth": []
-          },
-          {
             "apiKeyAuth": []
           }
         ],
@@ -2897,9 +2887,6 @@
           }
         ],
         "security": [
-          {
-            "bearerAuth": []
-          },
           {
             "apiKeyAuth": []
           }
@@ -3237,8 +3224,12 @@
   ],
   "tags": [
     {
-      "name": "Auth",
-      "description": "JWT session auth, refresh tokens, and user-owned API keys"
+      "name": "Auth (Internal Web Session)",
+      "description": "Internal web session flows (OAuth callback and JWT refresh). Not intended for API consumers."
+    },
+    {
+      "name": "API Keys",
+      "description": "API key management for authenticated users. Use generated keys for programmatic API access."
     },
     {
       "name": "User",
