@@ -38,12 +38,41 @@ curl -X GET "https://api.kisara.my.id/endpoint" \
 
 The API applies both global and per-route rate limits to keep the service stable.
 
+Current limits:
+
+- Global (all routes): 100 requests per IP per minute
+- Auth and API key management routes (`/auth/*`): 10 requests per IP per minute
+- User profile route (`/user`): 5 requests per IP per minute
+- Message routes (`/message/*`): 30 requests per IP per minute
+
+Notes:
+
+- If a route has a stricter route limit, that stricter limit is applied first.
+- Home routes use the global limit.
+- Rate limit key is based on client IP.
+
+When a limit is exceeded, the API responds with HTTP `429` and the standard error envelope.
+
+```json
+{
+  "status_code": 429,
+  "message": "Rate limit exceeded",
+  "metadata": {
+    "method": "GET",
+    "url": "/endpoint",
+    "execution_time_ms": 1,
+    "ip": "127.0.0.1",
+    "timestamp": "2026-04-15T12:00:00.000Z"
+  }
+}
+```
+
 <Steps>
   <Step title="Detect temporary failures">
-    When limits are exceeded, the server may temporarily reject requests.
+    Handle HTTP `429` as a temporary failure.
   </Step>
   <Step title="Retry with backoff">
-    Use exponential backoff to reduce repeated failures.
+    Retry with exponential backoff (for example: 1s, 2s, 4s, max 30s).
   </Step>
   <Step title="Reduce burst traffic">
     Use batching or queues for heavy endpoints and parallel operations.
