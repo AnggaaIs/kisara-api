@@ -14,7 +14,9 @@
     "dark": "#0c4a6e"
   },
   "appearance": {
-    "default": "system"
+    "default": "dark",
+    "dark": true,
+    "light": true
   },
   "background": {
     "decoration": "gradient"
@@ -38,12 +40,9 @@
       "theme": {
         "light": "github-light",
         "dark": "tokyo-night"
-      }
+      },
+      "showLineNumbers": true
     }
-  },
-  "banner": {
-    "content": "Kisara API is now live! Check out the [API Reference](/api/overview) to get started.",
-    "dismissible": true
   },
   "seo": {
     "indexing": "navigable",
@@ -55,23 +54,20 @@
     }
   },
   "search": {
-    "prompt": "Search Kisara docs..."
+    "prompt": "Search documentation...",
+    "mode": "flexible"
   },
   "metadata": {
     "timestamp": true
   },
-  "thumbnails": {
-    "appearance": "dark",
-    "fonts": {
-      "family": "Manrope"
-    }
+  "feedback": {
+    "suggestEdit": true,
+    "raiseIssue": true,
+    "thumbs": true
   },
   "contextual": {
     "options": ["copy", "view", "claude", "chatgpt"],
     "display": "header"
-  },
-  "interaction": {
-    "drilldown": true
   },
   "navbar": {
     "links": [
@@ -90,11 +86,6 @@
     "global": {
       "anchors": [
         {
-          "anchor": "API Playground",
-          "icon": "play",
-          "href": "/api/overview"
-        },
-        {
           "anchor": "Website",
           "icon": "globe",
           "href": "https://kisara.my.id"
@@ -108,15 +99,17 @@
     },
     "tabs": [
       {
-        "tab": "Docs",
+        "tab": "Guides",
         "groups": [
           {
             "group": "Getting Started",
             "icon": "rocket",
-            "pages": [
-              "index",
-              "api/overview"
-            ]
+            "pages": ["index", "introduction", "quickstart"]
+          },
+          {
+            "group": "Core Concepts",
+            "icon": "cpu",
+            "pages": ["authentication", "rate-limits", "errors"]
           }
         ]
       },
@@ -134,14 +127,16 @@
   },
   "api": {
     "playground": {
-      "display": "interactive"
+      "display": "interactive",
+      "mode": "explore",
+      "auth": "bearer"
     },
     "params": {
       "expanded": "all"
     },
     "url": "full",
     "examples": {
-      "languages": ["curl", "javascript", "python", "go", "php"],
+      "languages": ["curl", "javascript", "python", "go"],
       "defaults": "required",
       "prefill": true,
       "autogenerate": true
@@ -151,3 +146,4 @@
     }
   }
 }
+
