@@ -42,6 +42,19 @@ export class AuthController {
     );
   }
 
+  private buildCookieValue(name: string, value: string, maxAge: number) {
+    const securePart = environment.nodeEnv === "production" ? " Secure;" : "";
+
+    return `${name}=${value}; HttpOnly;${securePart} SameSite=Strict; Max-Age=${maxAge}; Path=/`;
+  }
+
+  private extractCode(request: FastifyRequest) {
+    const body = request.body as { code?: string } | undefined;
+    const query = request.query as { code?: string } | undefined;
+
+    return body?.code || query?.code;
+  }
+
   async handleGoogleURL(request: FastifyRequest, reply: FastifyReply) {
     try {
       const state = Math.random().toString(36).substring(2, 15);
@@ -66,7 +79,26 @@ export class AuthController {
 
   async handleGoogleCallback(request: FastifyRequest, reply: FastifyReply) {
     try {
-      const { code } = request.body as { code: string };
+      const code = this.extractCode(request);
+
+      if (!code) {
+        throw new AppError("Authorization code is required", 400);
+      }
+
+      if (request.method === "GET") {
+        const query = request.query as { state?: string } | undefined;
+        const callbackUrl = new URL(
+          `${environment.urls.web}/auth/google/callback`
+        );
+
+        callbackUrl.searchParams.set("code", code);
+        if (query?.state) {
+          callbackUrl.searchParams.set("state", query.state);
+        }
+
+        return reply.redirect(callbackUrl.toString(), 302);
+      }
+
       const { tokens } = await this.oauth2Client.getToken(code);
       this.oauth2Client.setCredentials(tokens);
 
@@ -114,6 +146,24 @@ export class AuthController {
         refresh_token: refreshToken,
       });
 
+      const refreshCookie = this.buildCookieValue(
+        "refresh_token",
+        refreshToken,
+        environment.jwt.refreshExpiresIn
+      );
+
+      if (environment.nodeEnv === "production") {
+        reply.header("Set-Cookie", refreshCookie);
+
+        return AppResponse.sendSuccessResponse(
+          request,
+          reply,
+          StatusCode.OK,
+          "Google login successful",
+          { access_token: accessToken }
+        );
+      }
+
       return AppResponse.sendSuccessResponse(
         request,
         reply,
@@ -142,15 +192,19 @@ export class AuthController {
         refresh_token: tokens.refreshToken,
       });
 
+      const cookieValue = this.buildCookieValue(
+        "refresh_token",
+        tokens.refreshToken,
+        environment.jwt.refreshExpiresIn
+      );
+      reply.header("Set-Cookie", cookieValue);
+
       return AppResponse.sendSuccessResponse(
         request,
         reply,
         StatusCode.OK,
         "Token refreshed successfully",
-        {
-          access_token: tokens.accessToken,
-          refresh_token: tokens.refreshToken,
-        }
+        { access_token: tokens.accessToken }
       );
     } catch (error) {
       logger.error({ err: error }, "Error refreshing token: ", error);

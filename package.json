@@ -15,6 +15,7 @@
     "migrate:status:prod": "cross-env NODE_ENV=production mikro-orm migration:list --config ./src/config/mikro-orm.config.ts",
     "pm2:wizard": "bash ./scripts/pm2-wizard.sh",
     "generate:openapi": "cross-env NODE_ENV=production ts-node src/scripts/generate-openapi.ts",
+    "dummy:user": "cross-env NODE_ENV=development ts-node src/scripts/create-dummy-user.ts",
     "prepare": "husky",
     "start": "pnpm run build && cross-env NODE_ENV=production node dist/src/index.js",
     "start:debug": "cross-env NODE_ENV=development ts-node --inspect-brk src/index.ts",

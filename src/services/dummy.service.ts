@@ -1,8 +1,10 @@
 import { Role, User } from "../entities/User";
 import { Database } from "../config/database";
 import crypto from "crypto";
-import { JwtUtil } from "../utils/jwt.util";
 import { GenerateUtil } from "../utils/generate.util";
+import { UserRepository } from "../repositories/UserRepository";
+import { UserService } from "./user.service";
+import { AuthService } from "./auth.service";
 
 export class DummyDataCreator {
   private static generateRandomEmail(): string {
@@ -10,23 +12,15 @@ export class DummyDataCreator {
     return `${randomString}@lazypeople.org`;
   }
 
-  private static generateRandomToken(
-    userEmail: string,
-    userSub: string,
-    userName: string,
-    userPicture: string
-  ): string {
-    return JwtUtil.generateToken({
-      email: userEmail,
-      sub: userSub,
-      name: userName,
-      picture: userPicture,
-    });
-  }
-
-  static async createDummyUser() {
+  static async createDummyUser(): Promise<{
+    email: string;
+    access_token: string;
+    refresh_token: string;
+  }> {
     const orm = Database.getORM();
-    const userRepository = orm.em.getRepository(User);
+    const userRepository = new UserRepository(orm.em.getRepository(User));
+    const userService = new UserService(userRepository);
+    const authService = new AuthService(userService);
     const linkId = await GenerateUtil.generateUniqueLinkID(orm.em, 7);
 
     const user = new User();
@@ -37,16 +31,19 @@ export class DummyDataCreator {
     user.profile_url = "https://example.com/profile/angga";
     user.nickname = "AnggaNet - " + linkId;
 
-    await userRepository.getEntityManager().persistAndFlush(user);
+    await userRepository.save(user);
 
-    const token = this.generateRandomToken(
-      user.email,
-      user.link_id,
-      user.name,
-      user.profile_url
-    );
+    const { accessToken, refreshToken } = authService.generateTokens(user);
+    await userRepository.update(user.id, { refresh_token: refreshToken });
 
     console.log(`Dummy user created with email: ${user.email}`);
-    console.log(`Generated Token: ${token}`);
+    console.log(`Generated Access Token: ${accessToken}`);
+    console.log(`Generated Refresh Token: ${refreshToken}`);
+
+    return {
+      email: user.email,
+      access_token: accessToken,
+      refresh_token: refreshToken,
+    };
   }
 }

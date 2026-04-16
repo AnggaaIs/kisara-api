@@ -17,6 +17,11 @@ const GoogleAuthUrlDataSchema = Type.Object({
   url: Type.String(),
 });
 
+const GoogleCallbackQuerySchema = Type.Object({
+  code: Type.String({ minLength: 1, maxLength: 512 }),
+  state: Type.Optional(Type.String({ minLength: 1, maxLength: 150 })),
+});
+
 const AuthTokenDataSchema = Type.Object({
   access_token: Type.String(),
   refresh_token: Type.String(),
@@ -89,6 +94,28 @@ export class AuthRoutes {
               body: AuthGoogleCallbackBody,
               response: {
                 200: buildSuccessResponseSchema(AuthTokenDataSchema, 200),
+                400: ApiValidationErrorSchema,
+                500: ApiErrorSchema,
+              },
+            },
+            config: {
+              rateLimit: this.rateLimitOptions,
+            },
+          },
+          this.authController.handleGoogleCallback.bind(this.authController)
+        );
+
+        instance.get<{ Querystring: typeof GoogleCallbackQuerySchema }>(
+          "/google/callback",
+          {
+            schema: {
+              tags: ["Auth (Internal Web Session)"],
+              summary: "Google OAuth callback redirect",
+              description:
+                "Google redirect handler for web login: exchanges authorization code, sets auth cookies, and redirects to frontend dashboard.",
+              querystring: GoogleCallbackQuerySchema,
+              response: {
+                302: Type.Object({}),
                 400: ApiValidationErrorSchema,
                 500: ApiErrorSchema,
               },

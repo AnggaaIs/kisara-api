@@ -28,6 +28,11 @@ export const environment = {
       (process.env.NODE_ENV === "production"
         ? "https://api.kisara.my.id"
         : `http://localhost:${process.env.PORT || "3000"}`),
+    web:
+      process.env.WEB_PUBLIC_URL ||
+      (process.env.NODE_ENV === "production"
+        ? "https://kisara.my.id"
+        : "http://localhost:3001"),
   },
   db: {
     host: process.env.DB_HOST || "localhost",
