@@ -92,7 +92,7 @@
         {
           "anchor": "API Playground",
           "icon": "play",
-          "href": "api/overview"
+          "href": "/api/overview"
         },
         {
           "anchor": "Website",
