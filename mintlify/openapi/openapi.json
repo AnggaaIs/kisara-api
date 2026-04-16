@@ -381,6 +381,155 @@
             }
           }
         }
+      },
+      "get": {
+        "summary": "Google OAuth callback redirect",
+        "tags": [
+          "Auth (Internal Web Session)"
+        ],
+        "description": "Google redirect handler for web login: exchanges authorization code, sets auth cookies, and redirects to frontend dashboard.",
+        "parameters": [
+          {
+            "schema": {
+              "minLength": 1,
+              "maxLength": 512,
+              "type": "string"
+            },
+            "in": "query",
+            "name": "code",
+            "required": true
+          },
+          {
+            "schema": {
+              "minLength": 1,
+              "maxLength": 150,
+              "type": "string"
+            },
+            "in": "query",
+            "name": "state",
+            "required": false
+          }
+        ],
+        "responses": {
+          "302": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {}
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status_code": {
+                      "type": "number"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "errors": {
+                      "type": "array",
+                      "items": {}
+                    },
+                    "metadata": {
+                      "type": "object",
+                      "properties": {
+                        "method": {
+                          "type": "string"
+                        },
+                        "url": {
+                          "type": "string"
+                        },
+                        "execution_time_ms": {
+                          "type": "number"
+                        },
+                        "ip": {
+                          "type": "string"
+                        },
+                        "timestamp": {
+                          "format": "date-time",
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "method",
+                        "url",
+                        "execution_time_ms",
+                        "ip",
+                        "timestamp"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "status_code",
+                    "message",
+                    "errors",
+                    "metadata"
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status_code": {
+                      "type": "number"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "metadata": {
+                      "type": "object",
+                      "properties": {
+                        "method": {
+                          "type": "string"
+                        },
+                        "url": {
+                          "type": "string"
+                        },
+                        "execution_time_ms": {
+                          "type": "number"
+                        },
+                        "ip": {
+                          "type": "string"
+                        },
+                        "timestamp": {
+                          "format": "date-time",
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "method",
+                        "url",
+                        "execution_time_ms",
+                        "ip",
+                        "timestamp"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "status_code",
+                    "message",
+                    "metadata"
+                  ]
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/auth/refresh": {

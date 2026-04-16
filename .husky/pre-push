@@ -4,11 +4,11 @@ set -e
 echo "Running OpenAPI generation before push..."
 pnpm generate:openapi
 
-if [ -n "$(git status --porcelain -- mintlify/openapi/openapi.json)" ]; then
+if ! git diff --quiet mintlify/openapi/openapi.json; then
+  echo "OpenAPI changed. Amending last commit..."
+
   git add mintlify/openapi/openapi.json
-  echo "OpenAPI spec changed and has been staged."
-  echo "Please commit the updated mintlify/openapi/openapi.json before pushing."
-  exit 1
+  git commit --amend --no-edit
 fi
 
 echo "OpenAPI is up-to-date. Proceeding with push."
