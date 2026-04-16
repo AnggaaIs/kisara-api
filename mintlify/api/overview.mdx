@@ -3,11 +3,18 @@ title: "API Overview"
 description: "How to use the Kisara API safely and consistently"
 ---
 
-This page covers the core API rules so your integration stays stable, secure, and easy to maintain.
-
-<Card title="Recommended flow" icon="sparkles" horizontal>
-  Keep it simple: handle auth first, set up retries for rate limits, then validate the response envelope on every request.
-</Card>
+<div className="relative overflow-hidden rounded-3xl border border-slate-200/70 bg-white/80 px-6 py-8 shadow-[0_20px_70px_-30px_rgba(15,23,42,0.2)] backdrop-blur dark:border-slate-800/80 dark:bg-slate-950/70 lg:px-8 lg:py-10">
+  <div className="absolute inset-x-0 top-0 -z-10 h-48 bg-[radial-gradient(circle_at_top_left,rgba(45,212,191,0.2),transparent_45%),radial-gradient(circle_at_top_right,rgba(59,130,246,0.12),transparent_35%)]" />
+  <div className="max-w-3xl">
+    <h2>API Overview</h2>
+    <p>This page covers the core API rules so your integration stays stable, secure, and easy to maintain.</p>
+  </div>
+  <div className="mt-6 max-w-3xl">
+    <Card title="Recommended flow" icon="sparkles" horizontal>
+      Keep it simple: handle auth first, set up retries for rate limits, then validate the response envelope on every request.
+    </Card>
+  </div>
+</div>
 
 ## Authentication
 
@@ -36,22 +43,40 @@ curl -X GET "https://api.kisara.my.id/endpoint" \
 
 ## Rate Limiting
 
-The API applies both global and per-route rate limits to keep the service stable.
+<div className="grid gap-4 lg:grid-cols-[1fr_0.9fr]">
+  <div>
+    The API applies both global and per-route rate limits to keep the service stable.
 
-Current limits:
+    Current limits:
 
-- Global (all routes): 100 requests per IP per minute
-- Auth and API key management routes (`/auth/*`): 10 requests per IP per minute
-- User profile route (`/user`): 5 requests per IP per minute
-- Message routes (`/message/*`): 30 requests per IP per minute
+    - Global (all routes): 100 requests per IP per minute
+    - Auth and API key management routes (`/auth/*`): 10 requests per IP per minute
+    - User profile route (`/user`): 5 requests per IP per minute
+    - Message routes (`/message/*`): 30 requests per IP per minute
 
-Notes:
+    Notes:
 
-- If a route has a stricter route limit, that stricter limit is applied first.
-- Home routes use the global limit.
-- Rate limit key is based on client IP.
+    - If a route has a stricter route limit, that stricter limit is applied first.
+    - Home routes use the global limit.
+    - Rate limit key is based on client IP.
 
-When a limit is exceeded, the API responds with HTTP `429` and the standard error envelope.
+    When a limit is exceeded, the API responds with HTTP `429` and the standard error envelope.
+  </div>
+
+  <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-900/40">
+    <Steps>
+      <Step title="Detect temporary failures">
+        Handle HTTP `429` as a temporary failure.
+      </Step>
+      <Step title="Retry with backoff">
+        Retry with exponential backoff (for example: 1s, 2s, 4s, max 30s).
+      </Step>
+      <Step title="Reduce burst traffic">
+        Use batching or queues for heavy endpoints and parallel operations.
+      </Step>
+    </Steps>
+  </div>
+</div>
 
 ```json
 {
@@ -66,18 +91,6 @@ When a limit is exceeded, the API responds with HTTP `429` and the standard erro
   }
 }
 ```
-
-<Steps>
-  <Step title="Detect temporary failures">
-    Handle HTTP `429` as a temporary failure.
-  </Step>
-  <Step title="Retry with backoff">
-    Retry with exponential backoff (for example: 1s, 2s, 4s, max 30s).
-  </Step>
-  <Step title="Reduce burst traffic">
-    Use batching or queues for heavy endpoints and parallel operations.
-  </Step>
-</Steps>
 
 ## Response Format
 
@@ -104,20 +117,22 @@ Most endpoints return a response envelope like this:
 
 ## Best Practices
 
-<CardGroup cols={2}>
-  <Card title="Always check status_code" icon="circle-check">
-    Don't rely on HTTP status alone. Use `status_code` and `message` to validate outcomes.
-  </Card>
-  <Card title="Keep metadata" icon="database">
-    Log `metadata.timestamp` and `metadata.execution_time_ms` for audits and debugging.
-  </Card>
-  <Card title="Use timeouts" icon="timer">
-    Configure client-side request timeouts so your app doesn't hang during network issues.
-  </Card>
-  <Card title="Use idempotency" icon="repeat">
-    For sensitive operations, prevent duplicate requests to avoid side effects.
-  </Card>
-</CardGroup>
+<div className="rounded-3xl border border-slate-200/70 bg-white/70 p-6 dark:border-slate-800 dark:bg-slate-950/50">
+  <CardGroup cols={2}>
+    <Card title="Always check status_code" icon="circle-check">
+      Don't rely on HTTP status alone. Use `status_code` and `message` to validate outcomes.
+    </Card>
+    <Card title="Keep metadata" icon="database">
+      Log `metadata.timestamp` and `metadata.execution_time_ms` for audits and debugging.
+    </Card>
+    <Card title="Use timeouts" icon="timer">
+      Configure client-side request timeouts so your app doesn't hang during network issues.
+    </Card>
+    <Card title="Use idempotency" icon="repeat">
+      For sensitive operations, prevent duplicate requests to avoid side effects.
+    </Card>
+  </CardGroup>
+</div>
 
 ## Next Steps
 

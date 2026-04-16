@@ -27,9 +27,9 @@
     "decoration": "gradient"
   },
   "colors": {
-    "primary": "#0b5fae",
-    "light": "#38bdf8",
-    "dark": "#0a3d78"
+    "primary": "#0f766e",
+    "light": "#2dd4bf",
+    "dark": "#134e4a"
   },
   "styling": {
     "eyebrows": "breadcrumbs",
