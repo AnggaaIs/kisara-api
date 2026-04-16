@@ -50,7 +50,8 @@
     "metatags": {
       "og:title": "Kisara API Documentation",
       "og:description": "Official API reference for Kisara",
-      "og:image": "/images/og-banner.png"
+      "og:image": "/images/og-banner.png",
+      "og:url": "https://kisara.my.id"
     }
   },
   "search": {
@@ -94,6 +95,11 @@
           "href": "api/overview"
         },
         {
+          "anchor": "Website",
+          "icon": "globe",
+          "href": "https://kisara.my.id"
+        },
+        {
           "anchor": "GitHub",
           "icon": "github",
           "href": "https://github.com/AnggaaIs/kisara-api"
@@ -122,7 +128,8 @@
   },
   "footer": {
     "socials": {
-      "github": "https://github.com/AnggaaIs/kisara-api"
+      "github": "https://github.com/AnggaaIs/kisara-api",
+      "website": "https://kisara.my.id"
     }
   },
   "api": {
