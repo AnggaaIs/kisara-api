@@ -2,7 +2,7 @@
   "$schema": "https://mintlify.com/docs.json",
   "name": "Kisara API Documentation",
   "description": "Developer-focused API docs for reliable, secure, and production-ready Kisara integrations.",
-  "theme": "almond",
+  "theme": "maple",
   "logo": {
     "dark": "/logo/dark.svg",
     "light": "/logo/light.svg"
