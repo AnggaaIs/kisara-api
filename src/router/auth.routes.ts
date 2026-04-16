@@ -24,7 +24,6 @@ const GoogleCallbackQuerySchema = Type.Object({
 
 const AuthTokenDataSchema = Type.Object({
   access_token: Type.String(),
-  refresh_token: Type.String(),
 });
 
 const ApiKeyItemSchema = Type.Object({
