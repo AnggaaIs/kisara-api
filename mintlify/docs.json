@@ -1,34 +1,31 @@
 {
   "$schema": "https://mintlify.com/docs.json",
   "name": "Kisara API Documentation",
-  "description": "High-performance API reference and technical documentation for Kisara services.",
-  "theme": "maple",
+  "description": "Developer-focused API docs for reliable, secure, and production-ready Kisara integrations.",
+  "theme": "almond",
   "logo": {
     "dark": "/logo/dark.svg",
     "light": "/logo/light.svg"
   },
   "favicon": "/favicon.svg",
   "colors": {
-    "primary": "#0ea5e9",
+    "primary": "#0284c7",
     "light": "#38bdf8",
-    "dark": "#0c4a6e"
+    "dark": "#082f49"
   },
   "appearance": {
-    "default": "system",
-    "dark": {
-      "primary": "#38bdf8"
-    }
+    "default": "dark"
   },
   "background": {
     "decoration": "gradient"
   },
   "fonts": {
     "heading": {
-      "family": "Manrope",
+      "family": "Space Grotesk",
       "weight": 700
     },
     "body": {
-      "family": "Manrope",
+      "family": "Plus Jakarta Sans",
       "weight": 400
     }
   },
@@ -37,7 +34,6 @@
   },
   "styling": {
     "eyebrows": "breadcrumbs",
-    "roundedness": "large",
     "codeblocks": {
       "theme": {
         "light": "github-light",
@@ -56,8 +52,7 @@
     }
   },
   "search": {
-    "prompt": "Search Kisara docs...",
-    "mode": "sensitive"
+    "prompt": "Search docs..."
   },
   "metadata": {
     "timestamp": true
@@ -65,11 +60,16 @@
   "thumbnails": {
     "appearance": "dark",
     "fonts": {
-      "family": "Manrope"
+      "family": "Space Grotesk"
     }
   },
   "contextual": {
-    "options": ["copy", "view", "claude", "chatgpt"],
+    "options": [
+      "copy",
+      "view",
+      "claude",
+      "chatgpt"
+    ],
     "display": "header"
   },
   "interaction": {
@@ -84,7 +84,7 @@
     ],
     "primary": {
       "type": "button",
-      "label": "Get Started",
+      "label": "Start Integrating",
       "href": "/api/overview"
     }
   },
@@ -92,7 +92,7 @@
     "global": {
       "anchors": [
         {
-          "anchor": "API Playground",
+          "anchor": "Playground",
           "icon": "terminal",
           "href": "/api/overview"
         },
@@ -110,10 +110,10 @@
     },
     "tabs": [
       {
-        "tab": "Docs",
+        "tab": "Guides",
         "groups": [
           {
-            "group": "Getting Started",
+            "group": "Foundations",
             "icon": "rocket",
             "pages": [
               "index",
@@ -143,13 +143,16 @@
     },
     "url": "full",
     "examples": {
-      "languages": ["curl", "javascript", "python", "go", "php"],
+      "languages": [
+        "curl",
+        "javascript",
+        "python",
+        "go",
+        "php"
+      ],
       "defaults": "required",
       "prefill": true,
       "autogenerate": true
-    },
-    "spec": {
-      "download": true
     }
   }
 }

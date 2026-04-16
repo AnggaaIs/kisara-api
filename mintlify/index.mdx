@@ -1,73 +1,68 @@
 ---
 title: "Kisara API"
-description: "Official docs for the Kisara API"
-mode: "custom"
+description: "Developer documentation for fast and reliable Kisara API integration"
 ---
 
-<div className="relative overflow-hidden px-5 pt-12 pb-8 lg:pt-20 lg:pb-12">
-	<div className="absolute inset-x-0 top-0 -z-10 h-72 bg-[radial-gradient(circle_at_top,rgba(45,212,191,0.28),transparent_58%),radial-gradient(circle_at_85%_20%,rgba(59,130,246,0.16),transparent_35%)]" />
-	<div className="mx-auto max-w-5xl rounded-3xl border border-slate-200/70 bg-white/80 p-8 shadow-[0_20px_70px_-30px_rgba(15,23,42,0.3)] backdrop-blur dark:border-slate-800/80 dark:bg-slate-950/70 lg:p-12">
-		<p className="text-sm font-semibold tracking-wide uppercase text-teal-600 dark:text-teal-400">
-			Kisara Platform
-		</p>
-		<h1 className="mt-3 text-4xl font-semibold tracking-tight text-slate-900 dark:text-slate-100 lg:text-5xl">
-			Kisara API Docs
-		</h1>
-		<p className="mt-5 max-w-2xl text-base text-slate-600 dark:text-slate-300 lg:text-lg">
-			Everything you need for a quick integration: API key auth basics, response patterns, and an interactive API playground.
-		</p>
+Kisara API documentation is designed for quick onboarding and production-ready integration.
 
-		<div className="mt-8 grid gap-4 lg:grid-cols-2">
-			<Card title="Start with API Overview" icon="book-open" href="/api/overview" cta="Open guide" arrow horizontal>
-				Learn the API conventions, response structure, and recommended integration flow.
-			</Card>
-			<Card title="Explore API Reference" icon="terminal" href="/api-reference" cta="Try endpoints" arrow horizontal>
-				Check endpoint details, request-response schemas, and run calls in the playground.
-			</Card>
-		</div>
- 
-		<div className="mt-6 grid gap-3 sm:grid-cols-3">
-			<div className="rounded-2xl border border-slate-200 bg-slate-50/80 px-4 py-3 text-sm text-slate-600 dark:border-slate-800 dark:bg-slate-900/40 dark:text-slate-300">
-				Production base URL: https://api.kisara.my.id
-			</div>
-			<div className="rounded-2xl border border-slate-200 bg-slate-50/80 px-4 py-3 text-sm text-slate-600 dark:border-slate-800 dark:bg-slate-900/40 dark:text-slate-300">
-				OpenAPI JSON: https://api.kisara.my.id/openapi.json
-			</div>
-			<div className="rounded-2xl border border-slate-200 bg-slate-50/80 px-4 py-3 text-sm text-slate-600 dark:border-slate-800 dark:bg-slate-900/40 dark:text-slate-300">
-				OpenAPI YAML: https://api.kisara.my.id/openapi.yaml
-			</div>
-		</div>
-	</div>
-</div>
+<Info>
+  Use API keys for consumer API endpoints. JWT is still used for internal web session flows such as login, refresh, and API key lifecycle management.
+</Info>
 
-<div className="mx-auto max-w-5xl px-5 pb-12">
-	<div className="grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
-		<Info>
-			Production base URL: https://api.kisara.my.id
-		</Info>
-		<Tip>
-			Recommended reading order: API Overview first, then API Reference.
-		</Tip>
-	</div>
+## Start Here
 
-	<div className="mt-6 rounded-3xl border border-slate-200/70 bg-white/70 p-6 shadow-sm dark:border-slate-800 dark:bg-slate-950/50">
-		<h2>Integration Flow</h2>
-		<Steps>
-			<Step title="Create API key from your account">
-				Sign in via web session, then generate API key from API key management endpoint or dashboard.
-			</Step>
-			<Step title="Send requests with API key header">
-				For protected endpoints, include `X-API-Key: <your_api_key>`.
-			</Step>
-			<Step title="Validate the response">
-				Use `status_code`, `message`, `data`, and `metadata` to verify and debug responses.
-			</Step>
-		</Steps>
+<CardGroup cols={2}>
+  <Card title="API Overview" icon="book-open" href="/api/overview" cta="Open guide" arrow>
+    Learn the core integration model: auth, rate limits, response envelope, and reliability practices.
+  </Card>
+  <Card title="API Reference" icon="terminal" href="/api-reference" cta="Try endpoints" arrow>
+    Browse all routes, schemas, and interactive examples generated from OpenAPI.
+  </Card>
+</CardGroup>
 
-		<div className="mt-6 rounded-2xl bg-slate-50 px-4 py-4 dark:bg-slate-900/50">
-			<Info>
-				JWT bearer token is still used for internal web session flows (login/refresh and API key management), not as primary auth for API consumers.
-			</Info>
-		</div>
-	</div>
-</div>
+## Quickstart
+
+<Steps>
+  <Step title="Create your API key">
+    Sign in to your Kisara account and generate an API key through API key management.
+  </Step>
+  <Step title="Send requests with X-API-Key">
+    Add the API key header for protected endpoints.
+  </Step>
+  <Step title="Validate response envelope">
+    Check status_code, message, data, and metadata in every client response path.
+  </Step>
+</Steps>
+
+<CodeGroup>
+
+```http Header
+X-API-Key: <your_api_key>
+```
+
+```bash cURL
+curl -X GET "https://api.kisara.my.id/user" \
+  -H "X-API-Key: <your_api_key>"
+```
+
+</CodeGroup>
+
+## Platform Endpoints
+
+<CardGroup cols={3}>
+  <Card title="Base URL" icon="globe">
+    https://api.kisara.my.id
+  </Card>
+  <Card title="OpenAPI JSON" icon="file-json">
+    https://api.kisara.my.id/openapi.json
+  </Card>
+  <Card title="OpenAPI YAML" icon="file-text">
+    https://api.kisara.my.id/openapi.yaml
+  </Card>
+</CardGroup>
+
+## Recommended Learning Path
+
+1. Read API Overview to understand behavior and integration contracts.
+2. Implement endpoints with API Reference and run examples in the playground.
+3. Add retries, timeouts, and idempotency before production rollout.
