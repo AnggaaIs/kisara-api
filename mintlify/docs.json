@@ -1,15 +1,25 @@
 {
   "$schema": "https://mintlify.com/docs.json",
   "name": "Kisara API Documentation",
+  "description": "Official API reference and documentation for Kisara API",
+  "theme": "maple",
   "logo": {
     "dark": "/logo/dark.svg",
     "light": "/logo/light.svg"
   },
+  "favicon": "/favicon.svg",
+  "colors": {
+    "primary": "#0ea5e9",
+    "light": "#38bdf8",
+    "dark": "#0c4a6e"
+  },
   "appearance": {
     "default": "system"
   },
+  "background": {
+    "decoration": "gradient"
+  },
   "fonts": {
-    "family": "Manrope",
     "heading": {
       "family": "Manrope",
       "weight": 700
@@ -22,47 +32,109 @@
   "icons": {
     "library": "lucide"
   },
-  "theme": "maple",
-  "background": {
-    "decoration": "gradient"
-  },
-  "colors": {
-    "primary": "#0ea5e9",
-    "light": "#38bdf8",
-    "dark": "#0c4a6e"
-  },
   "styling": {
     "eyebrows": "breadcrumbs",
-    "codeblocks": "system"
+    "codeblocks": {
+      "theme": {
+        "light": "github-light",
+        "dark": "tokyo-night"
+      }
+    }
+  },
+  "banner": {
+    "content": "Kisara API is now live! Check out the [API Reference](/api/overview) to get started.",
+    "dismissible": true
+  },
+  "seo": {
+    "indexing": "navigable",
+    "metatags": {
+      "og:title": "Kisara API Documentation",
+      "og:description": "Official API reference for Kisara",
+      "og:image": "/images/og-banner.png"
+    }
+  },
+  "search": {
+    "prompt": "Search Kisara docs..."
+  },
+  "metadata": {
+    "timestamp": true
+  },
+  "thumbnails": {
+    "appearance": "dark",
+    "fonts": {
+      "family": "Manrope"
+    }
+  },
+  "contextual": {
+    "options": ["copy", "view", "claude", "chatgpt"],
+    "display": "header"
+  },
+  "interaction": {
+    "drilldown": true
+  },
+  "navbar": {
+    "links": [
+      {
+        "href": "https://github.com/AnggaaIs/kisara-api",
+        "type": "github"
+      }
+    ],
+    "primary": {
+      "type": "button",
+      "label": "Get Started",
+      "href": "/api/overview"
+    }
   },
   "navigation": {
-    "groups": [
+    "global": {
+      "anchors": [
+        {
+          "anchor": "API Playground",
+          "icon": "play",
+          "href": "api/overview"
+        },
+        {
+          "anchor": "GitHub",
+          "icon": "github",
+          "href": "https://github.com/AnggaaIs/kisara-api"
+        }
+      ]
+    },
+    "tabs": [
       {
-        "group": "Getting Started",
-        "icon": "rocket",
-        "root": "index",
-        "pages": [
-          "index",
-          "api/overview"
+        "tab": "Docs",
+        "groups": [
+          {
+            "group": "Getting Started",
+            "icon": "rocket",
+            "pages": [
+              "index",
+              "api/overview"
+            ]
+          }
         ]
       },
       {
-        "group": "API Reference",
-        "icon": "square-terminal",
+        "tab": "API Reference",
         "openapi": "openapi/openapi.json"
       }
     ]
+  },
+  "footer": {
+    "socials": {
+      "github": "https://github.com/AnggaaIs/kisara-api"
+    }
   },
   "api": {
     "playground": {
       "display": "interactive"
     },
+    "params": {
+      "expanded": "all"
+    },
+    "url": "full",
     "examples": {
-      "languages": [
-        "curl",
-        "javascript",
-        "python"
-      ],
+      "languages": ["curl", "javascript", "python", "go", "php"],
       "defaults": "required",
       "prefill": true,
       "autogenerate": true
